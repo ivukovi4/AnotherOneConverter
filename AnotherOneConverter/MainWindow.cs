@@ -53,8 +53,6 @@ namespace AnotherOneConverter {
                 throw new ArgumentNullException(nameof(fileName));
             }
 
-            fileName = fileName.ToLower();
-
             if (_fileNames.Contains(fileName) || IsSupported(fileName) == false) {
                 return;
             }
