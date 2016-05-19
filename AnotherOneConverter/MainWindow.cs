@@ -53,20 +53,21 @@ namespace AnotherOneConverter {
                 throw new ArgumentNullException(nameof(fileName));
             }
 
-            if (_fileNames.Contains(fileName) || IsSupported(fileName) == false) {
+            var safeFileName = Path.GetFileName(fileName).ToLower();
+
+            if (_fileNames.Contains(safeFileName) || IsSupported(safeFileName) == false) {
                 return;
             }
 
             _fileNames.Add(fileName);
 
-            var safeFileName = Path.GetFileName(fileName);
             _safeFileNames.Add(safeFileName);
 
             var iconIndex = 0;
-            if (IsWord(fileName)) {
+            if (IsWord(safeFileName)) {
                 iconIndex = 12;
             }
-            else if (IsExcel(fileName)) {
+            else if (IsExcel(safeFileName)) {
                 iconIndex = 58;
             }
 
@@ -151,7 +152,7 @@ namespace AnotherOneConverter {
                 object oMissing = System.Reflection.Missing.Value;
 
                 for (var i = 0; i < _fileNames.Count; i++) {
-                    if (IsExcel(_fileNames[i]) == false) {
+                    if (IsExcel(_safeFileNames[i]) == false) {
                         continue;
                     }
 
@@ -171,10 +172,10 @@ namespace AnotherOneConverter {
 
                         object outputFileName;
                         if (_saveToSameDirectory.Checked) {
-                            outputFileName = Path.ChangeExtension((string)fileName, ".pdf");
+                            outputFileName = Path.ChangeExtension(fileName, ".pdf");
                         }
                         else {
-                            outputFileName = Path.ChangeExtension(Path.Combine(_folderBrowserDialog.SelectedPath, _safeFileNames[i]), ".pdf");
+                            outputFileName = Path.ChangeExtension(Path.Combine(_folderBrowserDialog.SelectedPath, Path.GetFileName(fileName)), ".pdf");
                         }
 
                         Log.DebugFormat("Output File {1}: {0}", outputFileName, i + 1);
@@ -223,7 +224,7 @@ namespace AnotherOneConverter {
                 object oMissing = System.Reflection.Missing.Value;
 
                 for (var i = 0; i < _fileNames.Count; i++) {
-                    if (IsWord(_fileNames[i]) == false) {
+                    if (IsWord(_safeFileNames[i]) == false) {
                         continue;
                     }
 
@@ -250,7 +251,7 @@ namespace AnotherOneConverter {
                             outputFileName = Path.ChangeExtension((string)fileName, ".pdf");
                         }
                         else {
-                            outputFileName = Path.ChangeExtension(Path.Combine(_folderBrowserDialog.SelectedPath, _safeFileNames[i]), ".pdf");
+                            outputFileName = Path.ChangeExtension(Path.Combine(_folderBrowserDialog.SelectedPath, Path.GetFileName((string)fileName)), ".pdf");
                         }
 
                         Log.DebugFormat("Output File {1}: {0}", outputFileName, i + 1);
