@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherOneConverter", "AnotherOneConverter\AnotherOneConverter.csproj", "{DCC798BE-4BC4-4BFB-B4EA-149E9DC86639}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherOneConverter.WPF", "AnotherOneConverter.WPF\AnotherOneConverter.WPF.csproj", "{D186A979-017D-4FBE-98DC-2D01BE2A69DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DCC798BE-4BC4-4BFB-B4EA-149E9DC86639}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCC798BE-4BC4-4BFB-B4EA-149E9DC86639}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCC798BE-4BC4-4BFB-B4EA-149E9DC86639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D186A979-017D-4FBE-98DC-2D01BE2A69DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D186A979-017D-4FBE-98DC-2D01BE2A69DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D186A979-017D-4FBE-98DC-2D01BE2A69DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D186A979-017D-4FBE-98DC-2D01BE2A69DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

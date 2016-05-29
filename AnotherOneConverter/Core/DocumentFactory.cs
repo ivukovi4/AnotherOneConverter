@@ -2,7 +2,7 @@
 using System.Reflection;
 
 namespace AnotherOneConverter.Core {
-    public class DocumentsFactory {
+    public class DocumentFactory : IDocumentFactory {
         private readonly Type[] _types = new[] { typeof(WordDocumentInfo), typeof(PdfDocumentInfo), typeof(ExcelDocumentInfo) };
 
         public DocumentInfo Create(string filePath) {

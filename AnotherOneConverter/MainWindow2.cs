@@ -10,12 +10,13 @@ namespace AnotherOneConverter {
     public partial class MainWindow2 : Form {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(MainWindow2));
 
-        private readonly DocumentsFactory _documentsFactory = new DocumentsFactory();
+        private readonly IDocumentFactory _documentFactory = new DocumentFactory();
+        private readonly IList<DocumentProject> _projects = new List<DocumentProject>();
 
         public MainWindow2() {
             InitializeComponent();
 
-            _dataGridView.AutoGenerateColumns = false;
+            /*_dataGridView.AutoGenerateColumns = false;
 
             _dataGridView.Columns.Add(new DataGridViewImageColumn {
                 Name = nameof(DocumentInfo.Icon),
@@ -29,36 +30,21 @@ namespace AnotherOneConverter {
                 }
             });
 
-            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
-                Name = nameof(DocumentInfo.FileName),
-                HeaderText = "File Name",
-                DataPropertyName = nameof(DocumentInfo.FileName),
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
-                SortMode = DataGridViewColumnSortMode.Automatic
-            });
+            _dataGridView.Columns.Add();
 
-            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
-                Name = nameof(DocumentInfo.LastWriteTime),
-                HeaderText = "Changed",
-                DataPropertyName = nameof(DocumentInfo.LastWriteTime),
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-                DefaultCellStyle = new DataGridViewCellStyle {
-                    Format = "g"
-                }
-            });
+            _dataGridView.Columns.Add();
 
-            _dataGridView.DataSource = Documents = new BindingList<DocumentInfo>();
+            _dataGridView.DataSource = Documents = new BindingList<DocumentInfo>();*/
         }
 
-        public IList<DocumentInfo> Documents { get; private set; }
+        //public IList<DocumentInfo> Documents { get; private set; }
 
         private void On_miOpen_Click(object sender, EventArgs e) {
             if (_openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
             for (int i = 0; i < _openFileDialog.FileNames.Length; i++) {
-                Documents.Add(_documentsFactory.Create(_openFileDialog.FileNames[i]));
+                //Documents.Add(_documentsFactory.Create(_openFileDialog.FileNames[i]));
             }
         }
 
@@ -73,22 +59,24 @@ namespace AnotherOneConverter {
             return Task.Run(() => {
                 IList<string> result = new List<string>();
 
+                var project = _projects[_tabControl.SelectedIndex];
+
                 BeginInvoke(() => {
                     _toolStripProgressBar.Visible = true;
-                    _toolStripProgressBar.Maximum = Documents.Count;
+                    _toolStripProgressBar.Maximum = project.Documents.Count;
                     _toolStripProgressBar.Value = 0;
 
                     _toolStripStatusLabel.Visible = true;
                 });
 
-                for (int i = 0; i < Documents.Count; i++) {
-                    BeginInvoke(() => _toolStripStatusLabel.Text = Documents[i].FileName);
+                for (int i = 0; i < project.Documents.Count; i++) {
+                    BeginInvoke(() => _toolStripStatusLabel.Text = project.Documents[i].FileName);
 
                     try {
-                        result.Add(Documents[i].ConvertToPdf(targetDirectory));
+                        result.Add(project.Documents[i].ConvertToPdf(targetDirectory));
                     }
                     catch (Exception ex) {
-                        Log.Error(string.Format("Can't convert document '{0}'", Documents[i].FileName), ex);
+                        Log.Error(string.Format("Can't convert document '{0}'", project.Documents[i].FileName), ex);
                         continue;
                     }
 
@@ -117,6 +105,65 @@ namespace AnotherOneConverter {
 
         private IAsyncResult BeginInvoke(Action action) {
             return BeginInvoke((Delegate)action);
+        }
+
+        private void _miNewProject_Click(object sender, EventArgs e) {
+            var project = new DocumentProject(_documentFactory);
+            _projects.Add(project);
+            CreateProjectPage(project);
+        }
+
+        private void CreateProjectPage(DocumentProject project) {
+            var tabPage = new TabPage();
+            tabPage.DataBindings.Add(new Binding("Text", project, nameof(DocumentProject.DisplayName)));
+
+            var dataGridView = new DataGridView {
+                BorderStyle = BorderStyle.None,
+                AutoGenerateColumns = false,
+                Dock = DockStyle.Fill,
+                AllowUserToAddRows = false,
+                AllowUserToOrderColumns = false,
+                AllowUserToResizeColumns = false,
+                AllowUserToResizeRows = false,
+                RowHeadersVisible = false,
+                DataSource = project.Documents
+            };
+
+            dataGridView.Columns.Add(new DataGridViewImageColumn {
+                Name = nameof(DocumentInfo.Icon),
+                HeaderText = string.Empty,
+                DataPropertyName = nameof(DocumentInfo.Icon),
+                ImageLayout = DataGridViewImageCellLayout.Zoom,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                MinimumWidth = 48,
+                Width = 48,
+                DefaultCellStyle = new DataGridViewCellStyle {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter
+                }
+            });
+
+            dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                Name = nameof(DocumentInfo.FileName),
+                HeaderText = "File Name",
+                DataPropertyName = nameof(DocumentInfo.FileName),
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                SortMode = DataGridViewColumnSortMode.Programmatic,
+                MinimumWidth = 200
+            });
+
+            dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                Name = nameof(DocumentInfo.LastWriteTime),
+                HeaderText = "Changed",
+                DataPropertyName = nameof(DocumentInfo.LastWriteTime),
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                SortMode = DataGridViewColumnSortMode.Programmatic,
+                DefaultCellStyle = new DataGridViewCellStyle {
+                    Format = "g"
+                }
+            });
+
+            tabPage.Controls.Add(dataGridView);
+            _tabControl.TabPages.Add(tabPage);
         }
     }
 }

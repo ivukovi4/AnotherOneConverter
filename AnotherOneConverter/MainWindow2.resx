@@ -174,29 +174,32 @@
   <data name="&gt;&gt;_toolStripContainer.BottomToolStripPanel.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <data name="_dataGridView.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+  <data name="_tabControl.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
-  <data name="_dataGridView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="_tabControl.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1, 0</value>
   </data>
-  <data name="_dataGridView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>624, 395</value>
+  <data name="_tabControl.Size" type="System.Drawing.Size, System.Drawing">
+    <value>623, 395</value>
   </data>
-  <data name="_dataGridView.TabIndex" type="System.Int32, mscorlib">
+  <data name="_tabControl.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="&gt;&gt;_dataGridView.Name" xml:space="preserve">
-    <value>_dataGridView</value>
+  <data name="&gt;&gt;_tabControl.Name" xml:space="preserve">
+    <value>_tabControl</value>
   </data>
-  <data name="&gt;&gt;_dataGridView.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;_tabControl.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;_dataGridView.Parent" xml:space="preserve">
+  <data name="&gt;&gt;_tabControl.Parent" xml:space="preserve">
     <value>_toolStripContainer.ContentPanel</value>
   </data>
-  <data name="&gt;&gt;_dataGridView.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;_tabControl.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="_toolStripContainer.ContentPanel.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>1, 0, 0, 0</value>
   </data>
   <data name="_toolStripContainer.ContentPanel.Size" type="System.Drawing.Size, System.Drawing">
     <value>624, 395</value>
@@ -258,32 +261,41 @@
   <data name="_menuStrip.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>None</value>
   </data>
+  <data name="_miOpen.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+O</value>
+  </data>
   <data name="_miOpen.Size" type="System.Drawing.Size, System.Drawing">
-    <value>147, 22</value>
+    <value>195, 22</value>
   </data>
   <data name="_miOpen.Text" xml:space="preserve">
-    <value>Open</value>
+    <value>Open File...</value>
   </data>
-  <data name="_miSaveAs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>147, 22</value>
-  </data>
-  <data name="_miSaveAs.Text" xml:space="preserve">
-    <value>Save As</value>
+  <data name="_miSaveAll.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+S</value>
   </data>
   <data name="_miSaveAll.Size" type="System.Drawing.Size, System.Drawing">
-    <value>147, 22</value>
+    <value>195, 22</value>
   </data>
   <data name="_miSaveAll.Text" xml:space="preserve">
-    <value>Save All</value>
+    <value>Save</value>
+  </data>
+  <data name="_miSaveAs.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Shift+S</value>
+  </data>
+  <data name="_miSaveAs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>195, 22</value>
+  </data>
+  <data name="_miSaveAs.Text" xml:space="preserve">
+    <value>Save As...</value>
   </data>
   <data name="_miSaveAndSplit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>147, 22</value>
+    <value>195, 22</value>
   </data>
   <data name="_miSaveAndSplit.Text" xml:space="preserve">
     <value>Save and Split</value>
   </data>
   <data name="_miExit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>147, 22</value>
+    <value>195, 22</value>
   </data>
   <data name="_miExit.Text" xml:space="preserve">
     <value>Exit</value>
@@ -293,6 +305,45 @@
   </data>
   <data name="fileToolStripMenuItem.Text" xml:space="preserve">
     <value>File</value>
+  </data>
+  <data name="_miNewProject.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="_miNewProject.Text" xml:space="preserve">
+    <value>New Project</value>
+  </data>
+  <data name="_miOpenProject.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="_miOpenProject.Text" xml:space="preserve">
+    <value>Open Project...</value>
+  </data>
+  <data name="_toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 6</value>
+  </data>
+  <data name="_miSaveProject.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="_miSaveProject.Text" xml:space="preserve">
+    <value>Save Project</value>
+  </data>
+  <data name="_miSaveProjectAs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="_miSaveProjectAs.Text" xml:space="preserve">
+    <value>Save Project As...</value>
+  </data>
+  <data name="_miCloseProject.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 22</value>
+  </data>
+  <data name="_miCloseProject.Text" xml:space="preserve">
+    <value>Close Project</value>
+  </data>
+  <data name="projectToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>56, 20</value>
+  </data>
+  <data name="projectToolStripMenuItem.Text" xml:space="preserve">
+    <value>Project</value>
   </data>
   <data name="_menuStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
@@ -2124,16 +2175,16 @@
   <data name="&gt;&gt;_miOpen.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;_miSaveAs.Name" xml:space="preserve">
-    <value>_miSaveAs</value>
-  </data>
-  <data name="&gt;&gt;_miSaveAs.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;_miSaveAll.Name" xml:space="preserve">
     <value>_miSaveAll</value>
   </data>
   <data name="&gt;&gt;_miSaveAll.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_miSaveAs.Name" xml:space="preserve">
+    <value>_miSaveAs</value>
+  </data>
+  <data name="&gt;&gt;_miSaveAs.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;_miSaveAndSplit.Name" xml:space="preserve">
@@ -2146,6 +2197,48 @@
     <value>_miExit</value>
   </data>
   <data name="&gt;&gt;_miExit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;projectToolStripMenuItem.Name" xml:space="preserve">
+    <value>projectToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;projectToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_miNewProject.Name" xml:space="preserve">
+    <value>_miNewProject</value>
+  </data>
+  <data name="&gt;&gt;_miNewProject.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_miOpenProject.Name" xml:space="preserve">
+    <value>_miOpenProject</value>
+  </data>
+  <data name="&gt;&gt;_miOpenProject.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_toolStripSeparator1.Name" xml:space="preserve">
+    <value>_toolStripSeparator1</value>
+  </data>
+  <data name="&gt;&gt;_toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_miSaveProject.Name" xml:space="preserve">
+    <value>_miSaveProject</value>
+  </data>
+  <data name="&gt;&gt;_miSaveProject.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_miSaveProjectAs.Name" xml:space="preserve">
+    <value>_miSaveProjectAs</value>
+  </data>
+  <data name="&gt;&gt;_miSaveProjectAs.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_miCloseProject.Name" xml:space="preserve">
+    <value>_miCloseProject</value>
+  </data>
+  <data name="&gt;&gt;_miCloseProject.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;_openFileDialog.Name" xml:space="preserve">

@@ -92,8 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\DocumentInfo.cs" />
-    <Compile Include="Core\DocumentsFactory.cs" />
+    <Compile Include="Core\DocumentProject.cs" />
+    <Compile Include="Core\DocumentFactory.cs" />
     <Compile Include="Core\ExcelDocumentInfo.cs" />
+    <Compile Include="Core\IDocumentFactory.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -456,6 +458,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

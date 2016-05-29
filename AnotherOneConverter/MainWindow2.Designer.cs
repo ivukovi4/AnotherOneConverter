@@ -28,14 +28,21 @@
             this._statusStrip = new System.Windows.Forms.StatusStrip();
             this._toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this._toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this._dataGridView = new System.Windows.Forms.DataGridView();
+            this._tabControl = new System.Windows.Forms.TabControl();
             this._menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._miOpen = new System.Windows.Forms.ToolStripMenuItem();
-            this._miSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this._miSaveAll = new System.Windows.Forms.ToolStripMenuItem();
+            this._miSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this._miSaveAndSplit = new System.Windows.Forms.ToolStripMenuItem();
             this._miExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._miNewProject = new System.Windows.Forms.ToolStripMenuItem();
+            this._miOpenProject = new System.Windows.Forms.ToolStripMenuItem();
+            this._toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this._miSaveProject = new System.Windows.Forms.ToolStripMenuItem();
+            this._miSaveProjectAs = new System.Windows.Forms.ToolStripMenuItem();
+            this._miCloseProject = new System.Windows.Forms.ToolStripMenuItem();
             this._openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this._folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this._toolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -43,7 +50,6 @@
             this._toolStripContainer.TopToolStripPanel.SuspendLayout();
             this._toolStripContainer.SuspendLayout();
             this._statusStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).BeginInit();
             this._menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,7 +62,7 @@
             // 
             // _toolStripContainer.ContentPanel
             // 
-            this._toolStripContainer.ContentPanel.Controls.Add(this._dataGridView);
+            this._toolStripContainer.ContentPanel.Controls.Add(this._tabControl);
             resources.ApplyResources(this._toolStripContainer.ContentPanel, "_toolStripContainer.ContentPanel");
             resources.ApplyResources(this._toolStripContainer, "_toolStripContainer");
             this._toolStripContainer.Name = "_toolStripContainer";
@@ -83,34 +89,26 @@
             this._toolStripStatusLabel.Name = "_toolStripStatusLabel";
             resources.ApplyResources(this._toolStripStatusLabel, "_toolStripStatusLabel");
             // 
-            // _dataGridView
+            // _tabControl
             // 
-            this._dataGridView.AllowDrop = true;
-            this._dataGridView.AllowUserToAddRows = false;
-            this._dataGridView.AllowUserToOrderColumns = true;
-            this._dataGridView.AllowUserToResizeColumns = false;
-            this._dataGridView.AllowUserToResizeRows = false;
-            this._dataGridView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this._dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            resources.ApplyResources(this._dataGridView, "_dataGridView");
-            this._dataGridView.MultiSelect = false;
-            this._dataGridView.Name = "_dataGridView";
-            this._dataGridView.ReadOnly = true;
-            this._dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            resources.ApplyResources(this._tabControl, "_tabControl");
+            this._tabControl.Name = "_tabControl";
+            this._tabControl.SelectedIndex = 0;
             // 
             // _menuStrip
             // 
             resources.ApplyResources(this._menuStrip, "_menuStrip");
             this._menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.projectToolStripMenuItem});
             this._menuStrip.Name = "_menuStrip";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._miOpen,
-            this._miSaveAs,
             this._miSaveAll,
+            this._miSaveAs,
             this._miSaveAndSplit,
             this._miExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -122,17 +120,17 @@
             resources.ApplyResources(this._miOpen, "_miOpen");
             this._miOpen.Click += new System.EventHandler(this.On_miOpen_Click);
             // 
-            // _miSaveAs
-            // 
-            this._miSaveAs.Name = "_miSaveAs";
-            resources.ApplyResources(this._miSaveAs, "_miSaveAs");
-            this._miSaveAs.Click += new System.EventHandler(this.On_miSaveAs_Click);
-            // 
             // _miSaveAll
             // 
             this._miSaveAll.Name = "_miSaveAll";
             resources.ApplyResources(this._miSaveAll, "_miSaveAll");
             this._miSaveAll.Click += new System.EventHandler(this.On_miSaveAll_Click);
+            // 
+            // _miSaveAs
+            // 
+            this._miSaveAs.Name = "_miSaveAs";
+            resources.ApplyResources(this._miSaveAs, "_miSaveAs");
+            this._miSaveAs.Click += new System.EventHandler(this.On_miSaveAs_Click);
             // 
             // _miSaveAndSplit
             // 
@@ -145,6 +143,49 @@
             this._miExit.Name = "_miExit";
             resources.ApplyResources(this._miExit, "_miExit");
             this._miExit.Click += new System.EventHandler(this.On_miExit_Click);
+            // 
+            // projectToolStripMenuItem
+            // 
+            this.projectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._miNewProject,
+            this._miOpenProject,
+            this._toolStripSeparator1,
+            this._miSaveProject,
+            this._miSaveProjectAs,
+            this._miCloseProject});
+            this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
+            resources.ApplyResources(this.projectToolStripMenuItem, "projectToolStripMenuItem");
+            // 
+            // _miNewProject
+            // 
+            this._miNewProject.Name = "_miNewProject";
+            resources.ApplyResources(this._miNewProject, "_miNewProject");
+            this._miNewProject.Click += new System.EventHandler(this._miNewProject_Click);
+            // 
+            // _miOpenProject
+            // 
+            this._miOpenProject.Name = "_miOpenProject";
+            resources.ApplyResources(this._miOpenProject, "_miOpenProject");
+            // 
+            // _toolStripSeparator1
+            // 
+            this._toolStripSeparator1.Name = "_toolStripSeparator1";
+            resources.ApplyResources(this._toolStripSeparator1, "_toolStripSeparator1");
+            // 
+            // _miSaveProject
+            // 
+            this._miSaveProject.Name = "_miSaveProject";
+            resources.ApplyResources(this._miSaveProject, "_miSaveProject");
+            // 
+            // _miSaveProjectAs
+            // 
+            this._miSaveProjectAs.Name = "_miSaveProjectAs";
+            resources.ApplyResources(this._miSaveProjectAs, "_miSaveProjectAs");
+            // 
+            // _miCloseProject
+            // 
+            this._miCloseProject.Name = "_miCloseProject";
+            resources.ApplyResources(this._miCloseProject, "_miCloseProject");
             // 
             // _openFileDialog
             // 
@@ -167,7 +208,6 @@
             this._toolStripContainer.PerformLayout();
             this._statusStrip.ResumeLayout(false);
             this._statusStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).EndInit();
             this._menuStrip.ResumeLayout(false);
             this._menuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -185,10 +225,17 @@
         private System.Windows.Forms.ToolStripMenuItem _miSaveAll;
         private System.Windows.Forms.ToolStripMenuItem _miSaveAndSplit;
         private System.Windows.Forms.ToolStripMenuItem _miExit;
-        private System.Windows.Forms.DataGridView _dataGridView;
         private System.Windows.Forms.ToolStripProgressBar _toolStripProgressBar;
         private System.Windows.Forms.OpenFileDialog _openFileDialog;
         private System.Windows.Forms.FolderBrowserDialog _folderBrowserDialog;
         private System.Windows.Forms.ToolStripStatusLabel _toolStripStatusLabel;
+        private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _miNewProject;
+        private System.Windows.Forms.ToolStripMenuItem _miOpenProject;
+        private System.Windows.Forms.ToolStripSeparator _toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem _miSaveProject;
+        private System.Windows.Forms.ToolStripMenuItem _miSaveProjectAs;
+        private System.Windows.Forms.ToolStripMenuItem _miCloseProject;
+        private System.Windows.Forms.TabControl _tabControl;
     }
 }
