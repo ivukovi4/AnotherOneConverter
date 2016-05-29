@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AnotherOneConverter.WPF.ViewModel {
     public class PdfDocumentViewModel : DocumentViewModel {
@@ -10,7 +9,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         public override string ConvertToPdf(string targetDirectory) {
-            throw new NotImplementedException();
+            return FilePath;
         }
     }
 }

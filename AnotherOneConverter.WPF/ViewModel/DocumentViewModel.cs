@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 
 namespace AnotherOneConverter.WPF.ViewModel {
-    public abstract class DocumentViewModel : ViewModelBase {
+    public abstract class DocumentViewModel : ObservableObject {
         public DocumentViewModel() { }
 
         public abstract IEnumerable<string> SupportedExtensions { get; }

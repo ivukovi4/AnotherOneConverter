@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extras.CommonServiceLocator;
 using GalaSoft.MvvmLight;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Practices.ServiceLocation;
 
 namespace AnotherOneConverter.WPF.ViewModel {
@@ -33,6 +34,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
             builder.RegisterType<MainViewModel>();
             builder.RegisterType<ProjectViewModel>();
+
+            builder.RegisterType<DialogCoordinator>().As<IDialogCoordinator>();
 
             _container = builder.Build();
             _serviceLocator = new AutofacServiceLocator(_container);
