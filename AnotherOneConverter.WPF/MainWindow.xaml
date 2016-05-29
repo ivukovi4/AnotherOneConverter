@@ -16,6 +16,7 @@
     Width="640"
     BorderThickness="1"
     WindowTransitionsEnabled="False"
+    Icon="logo.ico"
     Dialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
