@@ -1,5 +1,7 @@
-﻿using GalaSoft.MvvmLight.Threading;
+﻿using AnotherOneConverter.WPF.ViewModel;
+using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls;
+using System.Windows;
 
 namespace AnotherOneConverter.WPF {
     /// <summary>
@@ -10,6 +12,13 @@ namespace AnotherOneConverter.WPF {
             InitializeComponent();
 
             DispatcherHelper.Initialize();
+        }
+
+        private void DataGrid_Drop(object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                ((MainViewModel)DataContext).ActiveProject.AddDocument(files);
+            }
         }
     }
 }

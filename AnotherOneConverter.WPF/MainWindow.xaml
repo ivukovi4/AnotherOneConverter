@@ -28,6 +28,7 @@
 
             <DataTemplate x:Key="ProjectContentTemplate">
                 <DataGrid
+                    AllowDrop="True"
                     AutoGenerateColumns="False"
                     CanUserAddRows="False"
                     CanUserResizeRows="False"
@@ -35,6 +36,7 @@
                     HeadersVisibility="Column"
                     SelectionUnit="FullRow"
                     GridLinesVisibility="Horizontal"
+                    Drop="DataGrid_Drop"
                     ItemsSource="{Binding Documents}"
                     SelectedItem="{Binding ActiveDocument, Mode=TwoWay}">
                     <DataGrid.Columns>
