@@ -81,6 +81,18 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
+        private int? _progress;
+        public int? Progress {
+            get {
+                return _progress;
+            }
+            set {
+                if (Set(ref _progress, value)) {
+                    RaisePropertyChanged(() => StatusInfo);
+                }
+            }
+        }
+
         private bool _isDirty;
         public bool IsDirty {
             get {
@@ -95,7 +107,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
             get {
                 var statusInfo = DisplayName;
 
-                if (ActiveDocument != null) {
+                if (Progress.HasValue) {
+                    statusInfo += string.Format(", Converting '{0}'...", Documents[Progress.Value].FileName);
+                }
+                else if (ActiveDocument != null) {
                     statusInfo += string.Format(", {0}", ActiveDocument.FileName);
                 }
 
@@ -119,18 +134,33 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private RelayCommand _openDocuments;
-        public RelayCommand OpenDocuments {
+        private RelayCommand<string> _openDocuments;
+        public RelayCommand<string> OpenDocuments {
             get {
-                return _openDocuments ?? (_openDocuments = new RelayCommand(OnOpenDocuments));
+                return _openDocuments ?? (_openDocuments = new RelayCommand<string>(OnOpenDocuments));
             }
         }
 
-        private void OnOpenDocuments() {
+        private void OnOpenDocuments(string type) {
             var openFileDialog = new System.Windows.Forms.OpenFileDialog {
                 Multiselect = true,
-                Filter = "All|*.doc;*.docx;*.xls;*.xlsx;*.pdf|Word 2003|*.doc|Word 2007|*.docx|Excel 2003|*.xls|Excel 2007|*.xlsx|Pdf|*.pdf"
+                Filter = "All|*.doc;*.docx;*.xls;*.xlsx;*.pdf|Word|*.doc;*.docx|Excel|*.xls;*.xlsx|Pdf|*.pdf"
             };
+
+            switch (type.ToLowerInvariant()) {
+                default:
+                    openFileDialog.FilterIndex = 1;
+                    break;
+                case "word":
+                    openFileDialog.FilterIndex = 2;
+                    break;
+                case "excel":
+                    openFileDialog.FilterIndex = 3;
+                    break;
+                case "pdf":
+                    openFileDialog.FilterIndex = 4;
+                    break;
+            }
 
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
@@ -205,61 +235,57 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private RelayCommand _saveDocuments;
-        public RelayCommand SaveDocuments {
+        private RelayCommand _export;
+        public RelayCommand Export {
             get {
-                return _saveDocuments ?? (_saveDocuments = new RelayCommand(OnSaveDocuments));
+                return _export ?? (_export = new RelayCommand(OnExport));
             }
         }
 
-        private async void OnSaveDocuments() {
-            await SaveDocumentsWithProgressAsync(null);
+        private async void OnExport() {
+            if (Documents.Count == 0)
+                return;
+
+            await ExportWithProgressAsync(null);
         }
 
-        private RelayCommand _saveDocumentsAs;
-        public RelayCommand SaveDocumentsAs {
+        private RelayCommand _exportAs;
+        public RelayCommand ExportAs {
             get {
-                return _saveDocumentsAs ?? (_saveDocumentsAs = new RelayCommand(OnSaveDocumentsAs));
+                return _exportAs ?? (_exportAs = new RelayCommand(OnExportAs));
             }
         }
 
-        private async void OnSaveDocumentsAs() {
+        private async void OnExportAs() {
+            if (Documents.Count == 0)
+                return;
+
             var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (folderBrowserDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
-            await SaveDocumentsWithProgressAsync(folderBrowserDialog.SelectedPath);
+            await ExportWithProgressAsync(folderBrowserDialog.SelectedPath);
         }
 
-        private async Task<IList<string>> SaveDocumentsWithProgressAsync(string targetDirectory) {
+        private async Task<IList<string>> ExportWithProgressAsync(string targetDirectory) {
             var cancellationTokenSource = new CancellationTokenSource();
+            var progressHandler = new Progress<int>(async (value) => await DispatcherHelper.RunAsync(() => Progress = value));
 
-            var progressController = await _dialogCoordinator.ShowProgressAsync(MainViewModel, "Pdf convertation in process...", string.Empty, isCancelable: true);
-            progressController.Maximum = Documents.Count;
-            progressController.Canceled += (s, e) => cancellationTokenSource.Cancel();
-
-            var progress = new Progress<int>(async (value) => await DispatcherHelper.RunAsync(() => {
-                progressController.SetProgress(value);
-
-                if (Documents.Count > value) {
-                    progressController.SetMessage(Documents[value].FileName);
-                }
-            }));
+            Progress = 0;
 
             try {
-                return await SaveDocumentsWithProgressAsync(targetDirectory, progress, cancellationTokenSource.Token);
+                return await ExportWithProgressAsync(targetDirectory, progressHandler, cancellationTokenSource.Token);
             }
             catch (OperationCanceledException) {
-
                 // nothing?
                 return null;
             }
             finally {
-                await progressController.CloseAsync();
+                await DispatcherHelper.RunAsync(() => Progress = null);
             }
         }
 
-        private Task<IList<string>> SaveDocumentsWithProgressAsync(string tartgetDirectory, IProgress<int> progress, CancellationToken cancellationToken) {
+        private Task<IList<string>> ExportWithProgressAsync(string tartgetDirectory, IProgress<int> progress, CancellationToken cancellationToken) {
             return Task.Run(() => {
                 IList<string> result = new List<string>();
 
@@ -282,14 +308,17 @@ namespace AnotherOneConverter.WPF.ViewModel {
             });
         }
 
-        private RelayCommand _saveDocumentsAndSplit;
-        public RelayCommand SaveDocumentsAndSplit {
+        private RelayCommand _exportToOne;
+        public RelayCommand ExportToOne {
             get {
-                return _saveDocumentsAndSplit ?? (_saveDocumentsAndSplit = new RelayCommand(OnSaveDocumentsAndSplit));
+                return _exportToOne ?? (_exportToOne = new RelayCommand(OnExportToOne));
             }
         }
 
-        private async void OnSaveDocumentsAndSplit() {
+        private async void OnExportToOne() {
+            if (Documents.Count == 0)
+                return;
+
             var saveFileDialog = new System.Windows.Forms.SaveFileDialog {
                 FileName = string.Format("{0}.pdf", DisplayName),
                 DefaultExt = ".pdf",
@@ -300,12 +329,18 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 return;
 
             using (var outputDocument = new PdfDocument()) {
-                foreach (var filePath in await SaveDocumentsWithProgressAsync(Path.GetTempPath())) {
-                    using (var inputDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import)) {
-                        for (int i = 0; i < inputDocument.PageCount; i++) {
-                            outputDocument.AddPage(inputDocument.Pages[i]);
-                            outputDocument.Save(saveFileDialog.FileName);
+                foreach (var filePath in await ExportWithProgressAsync(Path.GetTempPath())) {
+                    try {
+                        using (var inputDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import)) {
+                            for (int i = 0; i < inputDocument.PageCount; i++) {
+                                outputDocument.AddPage(inputDocument.Pages[i]);
+                                outputDocument.Save(saveFileDialog.FileName);
+                            }
                         }
+                    }
+                    catch (PdfReaderException ex) {
+                        Log.Error(string.Format("Can't open Pdf file: {0}", filePath), ex);
+                        continue;
                     }
                 }
             }

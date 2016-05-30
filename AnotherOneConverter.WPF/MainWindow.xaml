@@ -4,8 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:AnotherOneConverter.WPF"
+    xmlns:local="clr-namespace:AnotherOneConverter.WPF.Controls"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:Material="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:MaterialConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     mc:Ignorable="d"
@@ -14,16 +16,26 @@
     MinWidth="640"
     Height="480"
     Width="640"
-    BorderThickness="1"
-    WindowTransitionsEnabled="False"
     Icon="logo.ico"
+    BorderThickness="1"
+    Background="#fafafa"
+    WindowTransitionsEnabled="False"
     Dialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <MaterialConverters:NullableToVisibilityConverter x:Key="NullableToVisibilityConverter"></MaterialConverters:NullableToVisibilityConverter>
+
             <DataTemplate x:Key="ProjectHeaderTemplate">
-                <TextBlock FontSize="18" Text="{Binding DisplayName}"></TextBlock>
+                <Border Padding="12">
+                    <TextBlock FontSize="18" Text="{Binding DisplayName}"></TextBlock>
+                </Border>
             </DataTemplate>
 
             <DataTemplate x:Key="ProjectContentTemplate">
@@ -43,6 +55,66 @@
                         <DataGridTextColumn Header="File Name" Binding="{Binding FileName, Mode=OneWay}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Changed" Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"></DataGridTextColumn>
                     </DataGrid.Columns>
+
+                    <DataGrid.Template>
+                        <ControlTemplate TargetType="{x:Type DataGrid}">
+                            <Border
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                                <ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
+                                    <ScrollViewer.Template>
+                                        <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Button Command="{x:Static DataGrid.SelectAllCommand}" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                                <DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                                <ScrollContentPresenter
+                                                    x:Name="PART_ScrollContentPresenter"
+                                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                    Grid.ColumnSpan="2"
+                                                    Grid.Row="1">
+
+
+                                                </ScrollContentPresenter>
+                                                <ScrollBar
+                                                    x:Name="PART_VerticalScrollBar"
+                                                    Grid.Column="2"
+                                                    Maximum="{TemplateBinding ScrollableHeight}"
+                                                    Orientation="Vertical"
+                                                    Grid.Row="1"
+                                                    Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                                    Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                    ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                                <Grid Grid.Column="1" Grid.Row="2">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+                                                </Grid>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </ScrollViewer.Template>
+
+                                    <Border Padding="0,0,0,88">
+                                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </Border>
+                                </ScrollViewer>
+                            </Border>
+                        </ControlTemplate>
+                    </DataGrid.Template>
                 </DataGrid>
             </DataTemplate>
         </ResourceDictionary>
@@ -53,20 +125,21 @@
             <i:InvokeCommandAction Command="{Binding Closing}"></i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    
+
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="20px"></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition Height="Auto" MinHeight="20px"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Menu>
             <MenuItem Header="File">
-                <MenuItem Header="Open File..." Command="{Binding ActiveProject.OpenDocuments}"></MenuItem>
-                <MenuItem Header="Save" Command="{Binding ActiveProject.SaveDocuments}"></MenuItem>
-                <MenuItem Header="Save As..." Command="{Binding ActiveProject.SaveDocumentsAs}"></MenuItem>
-                <MenuItem Header="Save and Split" Command="{Binding ActiveProject.SaveDocumentsAndSplit}"></MenuItem>
+                <MenuItem Header="Open File..." Command="{Binding ActiveProject.OpenDocuments}" CommandParameter=""></MenuItem>
+                <MenuItem Header="Export" Command="{Binding ActiveProject.Export}"></MenuItem>
+                <MenuItem Header="Export As..." Command="{Binding ActiveProject.ExportAs}"></MenuItem>
+                <MenuItem Header="Export To One" Command="{Binding ActiveProject.ExportToOne}"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Exit"></MenuItem>
             </MenuItem>
@@ -88,8 +161,77 @@
             ContentTemplate="{StaticResource ProjectContentTemplate}">
         </TabControl>
 
+        <StackPanel
+            Grid.Row="1"
+            Margin="18"
+            Orientation="Horizontal"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Right">
+
+            <Material:PopupBox
+                ToolTip="Export"
+                Margin="0,0,18,0"
+                ToggleCheckedContentCommand="{Binding ActiveProject.Export}"
+                Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}">
+                <Material:PopupBox.ToggleCheckedContent>
+                    <Material:PackIcon Kind="ArrowTopRight" Width="24" Height="24"></Material:PackIcon>
+                </Material:PopupBox.ToggleCheckedContent>
+
+                <Material:PopupBox.ToggleContent>
+                    <Material:PackIcon Kind="ArrowUp" Width="24" Height="24"></Material:PackIcon>
+                </Material:PopupBox.ToggleContent>
+
+                <StackPanel>
+                    <Button ToolTip="Export to One" Command="{Binding ActiveProject.ExportToOne}" Foreground="{StaticResource IdealForegroundColorBrush}">
+                        One
+                    </Button>
+
+                    <Button ToolTip="Export As" Command="{Binding ActiveProject.ExportAs}" Foreground="{StaticResource IdealForegroundColorBrush}">
+                        As
+                    </Button>
+                </StackPanel>
+            </Material:PopupBox>
+
+            <Material:PopupBox
+                ToolTip="Open"
+                ToggleCheckedContentCommand="{Binding ActiveProject.OpenDocuments}"
+                ToggleCheckedContentCommandParameter=""
+                Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}">
+                <Material:PopupBox.ToggleCheckedContent>
+                    <Material:PackIcon Kind="File" Width="24" Height="24"></Material:PackIcon>
+                </Material:PopupBox.ToggleCheckedContent>
+
+                <StackPanel>
+                    <Button ToolTip="Open pdf file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="pdf">
+                        <Material:PackIcon Kind="FilePdf" Foreground="{StaticResource IdealForegroundColorBrush}"></Material:PackIcon>
+                    </Button>
+                    <Button ToolTip="Open excel file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="excel">
+                        <Material:PackIcon Kind="FileExcel" Foreground="{StaticResource IdealForegroundColorBrush}"></Material:PackIcon>
+                    </Button>
+                    <Button ToolTip="Open word file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="word">
+                        <Material:PackIcon Kind="FileWord" Foreground="{StaticResource IdealForegroundColorBrush}"></Material:PackIcon>
+                    </Button>
+                </StackPanel>
+            </Material:PopupBox>
+        </StackPanel>
+
+        <Material:Card 
+            Grid.Row="1"
+            Padding="4"
+            UniformCornerRadius="14"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Visibility="{Binding ActiveProject.Progress, Converter={StaticResource NullableToVisibilityConverter}}">
+            <ProgressBar
+                IsIndeterminate="True"
+                local:ProgressBarExtension.AnimatedValue="{Binding ActiveProject.Progress}"
+                Maximum="{Binding ActiveProject.Documents.Count}"
+                Style="{StaticResource MaterialDesignCircularProgressBar}"></ProgressBar>
+        </Material:Card>
+
         <StatusBar Grid.Row="2">
             <StatusBarItem Content="{Binding ActiveProject.StatusInfo}"></StatusBarItem>
         </StatusBar>
     </Grid>
+
 </Controls:MetroWindow>
