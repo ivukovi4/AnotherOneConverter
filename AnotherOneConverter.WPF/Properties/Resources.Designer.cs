@@ -70,6 +70,15 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ButtonDeleteDocumentTooltip {
+            get {
+                return ResourceManager.GetString("ButtonDeleteDocumentTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Down.
         /// </summary>
         public static string ButtonDownTooltip {

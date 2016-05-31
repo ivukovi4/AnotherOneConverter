@@ -120,6 +120,9 @@
   <data name="ApplicationTitle" xml:space="preserve">
     <value>PDF Конвертер</value>
   </data>
+  <data name="ButtonDeleteDocumentTooltip" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
   <data name="ButtonDownTooltip" xml:space="preserve">
     <value>Вниз</value>
   </data>

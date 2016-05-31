@@ -137,6 +137,15 @@
                 <Material:PackIcon Kind="ArrowDownBold" Height="24" Width="24" />
             </Button>
 
+            <Button
+                ToolTip="{x:Static p:Resources.ButtonDeleteDocumentTooltip}"
+                Margin="0,0,12,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ActiveProject.DeleteDocument}"
+                Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                <Material:PackIcon Kind="Delete" Height="24" Width="24" />
+            </Button>
+
             <Material:PopupBox
                 ToolTip="{x:Static p:Resources.PopupBoxExportTooltip}"
                 Margin="0,0,18,0"

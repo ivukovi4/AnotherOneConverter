@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -104,6 +105,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
                     DocumentUp.RaiseCanExecuteChanged();
                     DocumentDown.RaiseCanExecuteChanged();
+                    DeleteDocument.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -465,6 +467,28 @@ namespace AnotherOneConverter.WPF.ViewModel {
             Documents.RemoveAt(index);
             Documents.Insert(index + 1, activeDocument);
             ActiveDocument = activeDocument;
+        }
+
+        private RelayCommand _deleteDocument;
+        public RelayCommand DeleteDocument {
+            get {
+                return _deleteDocument ?? (_deleteDocument = new RelayCommand(OnDeleteDocument, () => ActiveDocument != null));
+            }
+        }
+
+        private void OnDeleteDocument() {
+            if (ActiveDocument == null)
+                return;
+
+            var index = Documents.IndexOf(ActiveDocument);
+            Documents.RemoveAt(index);
+
+            if (Documents.Count > index) {
+                ActiveDocument = Documents[index];
+            }
+            else {
+                ActiveDocument = Documents.LastOrDefault();
+            }
         }
     }
 }
