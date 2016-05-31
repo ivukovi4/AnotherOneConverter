@@ -118,96 +118,96 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ApplicationTitle" xml:space="preserve">
-    <value>PDF Converter</value>
+    <value>PDF Конвертер</value>
   </data>
   <data name="ButtonDownTooltip" xml:space="preserve">
-    <value>Down</value>
+    <value>Вниз</value>
   </data>
   <data name="ButtonExportAsContent" xml:space="preserve">
-    <value>As</value>
+    <value>Как</value>
   </data>
   <data name="ButtonExportAsTooltip" xml:space="preserve">
-    <value>Export As...</value>
+    <value>Экспорт Как...</value>
   </data>
   <data name="ButtonExportToOneAsContent" xml:space="preserve">
-    <value>1 As</value>
+    <value>1 Как</value>
   </data>
   <data name="ButtonExportToOneAsTooltip" xml:space="preserve">
-    <value>Export to One As...</value>
+    <value>Экспорт в 1 Как...</value>
   </data>
   <data name="ButtonExportToOneContent" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="ButtonExportToOneTooltip" xml:space="preserve">
-    <value>Export to One</value>
+    <value>Экспорт в 1</value>
   </data>
   <data name="ButtonOpenExcelTooltip" xml:space="preserve">
-    <value>Open Excel File...</value>
+    <value>Открыть 'Excel' Файл...</value>
   </data>
   <data name="ButtonOpenPdfTooltip" xml:space="preserve">
-    <value>Open Pdf File...</value>
+    <value>Открыть 'Pdf' Файл...</value>
   </data>
   <data name="ButtonOpenWordTooltip" xml:space="preserve">
-    <value>Open Word File...</value>
+    <value>Открыть 'Word' Файл...</value>
   </data>
   <data name="ButtonUpTooltip" xml:space="preserve">
-    <value>Up</value>
+    <value>Вверх</value>
   </data>
   <data name="ColumnChangedHeader" xml:space="preserve">
-    <value>Changed</value>
+    <value>Дата изменения</value>
   </data>
   <data name="ColumnFileNameHeader" xml:space="preserve">
-    <value>File Name</value>
+    <value>Имя файла</value>
   </data>
   <data name="ConvertingFormat" xml:space="preserve">
-    <value>, Converting '{0}'...</value>
+    <value>, Конвертация '{0}'...</value>
   </data>
   <data name="FilterAllTitle" xml:space="preserve">
-    <value>All</value>
+    <value>Все</value>
   </data>
   <data name="MenuItemCloseProjectHeader" xml:space="preserve">
-    <value>Close Project</value>
+    <value>Закрыть Проет</value>
   </data>
   <data name="MenuItemExitHeader" xml:space="preserve">
-    <value>Exit</value>
+    <value>Выход</value>
   </data>
   <data name="MenuItemExportAsHeader" xml:space="preserve">
-    <value>Export As...</value>
+    <value>Экспорт Как...</value>
   </data>
   <data name="MenuItemExportHeader" xml:space="preserve">
-    <value>Export</value>
+    <value>Экспорт</value>
   </data>
   <data name="MenuItemExportToOneAsHeader" xml:space="preserve">
-    <value>Export to One As...</value>
+    <value>Экспорт в 1 Как...</value>
   </data>
   <data name="MenuItemExportToOneHeader" xml:space="preserve">
-    <value>Export to One</value>
+    <value>Экспорт в 1</value>
   </data>
   <data name="MenuItemFileHeader" xml:space="preserve">
-    <value>File</value>
+    <value>Файл</value>
   </data>
   <data name="MenuItemNewProjectHeader" xml:space="preserve">
-    <value>New Project</value>
+    <value>Новый Проект</value>
   </data>
   <data name="MenuItemOpenFileHeader" xml:space="preserve">
-    <value>Open File...</value>
+    <value>Открыть Файл...</value>
   </data>
   <data name="MenuItemOpenProjectHeader" xml:space="preserve">
-    <value>Open Project...</value>
+    <value>Открыть Проект...</value>
   </data>
   <data name="MenuItemProjectHeader" xml:space="preserve">
-    <value>Project</value>
+    <value>Проект</value>
   </data>
   <data name="MenuItemSaveProjectAsHeader" xml:space="preserve">
-    <value>Save Project As...</value>
+    <value>Сохранить Проект Как...</value>
   </data>
   <data name="MenuItemSaveProjectHeader" xml:space="preserve">
-    <value>Save Project</value>
+    <value>Сохранить Проект</value>
   </data>
   <data name="PopupBoxExportTooltip" xml:space="preserve">
-    <value>Export</value>
+    <value>Экспорт</value>
   </data>
   <data name="PopupBoxOpenTooltip" xml:space="preserve">
-    <value>Open File...</value>
+    <value>Открыть Файл...</value>
   </data>
 </root>

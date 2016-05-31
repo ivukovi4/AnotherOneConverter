@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:p="clr-namespace:AnotherOneConverter.WPF.Properties"
     xmlns:Controls="clr-namespace:AnotherOneConverter.WPF.Controls"
     xmlns:Converters="clr-namespace:AnotherOneConverter.WPF.Converters"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -12,7 +13,7 @@
     xmlns:MahApps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:MahAppsDialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     mc:Ignorable="d"
-    Title="PDF Converter"
+    Title="{x:Static p:Resources.ApplicationTitle}"
     MinHeight="480"
     MinWidth="640"
     Height="600"
@@ -61,8 +62,8 @@
                     ItemsSource="{Binding Documents}"
                     SelectedItem="{Binding ActiveDocument, Mode=TwoWay}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="File Name" Binding="{Binding FileName, Mode=OneWay}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Changed" Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{x:Static p:Resources.ColumnFileNameHeader}" Binding="{Binding FileName, Mode=OneWay}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{x:Static p:Resources.ColumnChangedHeader}" Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"></DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </DataTemplate>
@@ -84,22 +85,22 @@
         </Grid.RowDefinitions>
 
         <Menu>
-            <MenuItem Header="File">
-                <MenuItem Header="Open File..." Command="{Binding ActiveProject.OpenDocuments}" CommandParameter=""></MenuItem>
-                <MenuItem Header="Export" Command="{Binding ActiveProject.Export}"></MenuItem>
-                <MenuItem Header="Export As..." Command="{Binding ActiveProject.ExportAs}"></MenuItem>
-                <MenuItem Header="Export to One" Command="{Binding ActiveProject.ExportToOne}"></MenuItem>
-                <MenuItem Header="Export to One As..." Command="{Binding ActiveProject.ExportToOneAs}"></MenuItem>
+            <MenuItem Header="{x:Static p:Resources.MenuItemFileHeader}">
+                <MenuItem Header="{x:Static p:Resources.MenuItemOpenFileHeader}" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter=""></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemExportHeader}" Command="{Binding ActiveProject.Export}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemExportAsHeader}" Command="{Binding ActiveProject.ExportAs}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemExportToOneHeader}" Command="{Binding ActiveProject.ExportToOne}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemExportToOneAsHeader}" Command="{Binding ActiveProject.ExportToOneAs}"></MenuItem>
                 <Separator></Separator>
-                <MenuItem Header="Exit"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemExitHeader}" Click="OnExitClick"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Project">
-                <MenuItem Header="New Project" Command="{Binding CreateProject}"></MenuItem>
-                <MenuItem Header="Open Project..." Command="{Binding OpenProject}"></MenuItem>
+            <MenuItem Header="{x:Static p:Resources.MenuItemProjectHeader}">
+                <MenuItem Header="{x:Static p:Resources.MenuItemNewProjectHeader}" Command="{Binding CreateProject}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemOpenProjectHeader}" Command="{Binding OpenProject}"></MenuItem>
                 <Separator></Separator>
-                <MenuItem Header="Save Project" Command="{Binding ActiveProject.Save}"></MenuItem>
-                <MenuItem Header="Save Project As..." Command="{Binding ActiveProject.SaveAs}"></MenuItem>
-                <MenuItem Header="Close Project" Command="{Binding ActiveProject.Close}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectHeader}" Command="{Binding ActiveProject.Save}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectAsHeader}" Command="{Binding ActiveProject.SaveAs}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemCloseProjectHeader}" Command="{Binding ActiveProject.Close}"></MenuItem>
             </MenuItem>
         </Menu>
 
@@ -119,7 +120,7 @@
             HorizontalAlignment="Right">
 
             <Button
-                ToolTip="Up"
+                ToolTip="{x:Static p:Resources.ButtonUpTooltip}"
                 Margin="0,0,12,0"
                 HorizontalAlignment="Left"
                 Command="{Binding ActiveProject.DocumentUp}"
@@ -128,7 +129,7 @@
             </Button>
 
             <Button
-                ToolTip="Down"
+                ToolTip="{x:Static p:Resources.ButtonDownTooltip}"
                 Margin="0,0,12,0"
                 HorizontalAlignment="Left"
                 Command="{Binding ActiveProject.DocumentDown}"
@@ -137,7 +138,7 @@
             </Button>
 
             <Material:PopupBox
-                ToolTip="Export"
+                ToolTip="{x:Static p:Resources.PopupBoxExportTooltip}"
                 Margin="0,0,18,0"
                 PopupMode="MouseOver"
                 IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
@@ -152,22 +153,28 @@
                 </Material:PopupBox.ToggleContent>
 
                 <StackPanel>
-                    <Button ToolTip="Export to One As" Command="{Binding ActiveProject.ExportToOneAs}" Foreground="{StaticResource IdealForegroundColorBrush}">
-                        1 As
-                    </Button>
+                    <Button
+                        ToolTip="{x:Static p:Resources.ButtonExportToOneAsTooltip}"
+                        Command="{Binding ActiveProject.ExportToOneAs}"
+                        Foreground="{StaticResource IdealForegroundColorBrush}"
+                        Content="{x:Static p:Resources.ButtonExportToOneAsContent}"></Button>
 
-                    <Button ToolTip="Export to One" Command="{Binding ActiveProject.ExportToOne}" Foreground="{StaticResource IdealForegroundColorBrush}">
-                        1
-                    </Button>
+                    <Button
+                        ToolTip="{x:Static p:Resources.ButtonExportToOneTooltip}"
+                        Command="{Binding ActiveProject.ExportToOne}"
+                        Foreground="{StaticResource IdealForegroundColorBrush}"
+                        Content="{x:Static p:Resources.ButtonExportToOneContent}"></Button>
 
-                    <Button ToolTip="Export As" Command="{Binding ActiveProject.ExportAs}" Foreground="{StaticResource IdealForegroundColorBrush}">
-                        As
-                    </Button>
+                    <Button
+                        ToolTip="{x:Static p:Resources.ButtonExportAsTooltip}"
+                        Command="{Binding ActiveProject.ExportAs}"
+                        Foreground="{StaticResource IdealForegroundColorBrush}"
+                        Content="{x:Static p:Resources.ButtonExportAsContent}"></Button>
                 </StackPanel>
             </Material:PopupBox>
 
             <Material:PopupBox
-                ToolTip="Open"
+                ToolTip="{x:Static p:Resources.PopupBoxOpenTooltip}"
                 PopupMode="MouseOver"
                 IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
                 ToggleCheckedContentCommand="{Binding ActiveProject.OpenDocuments}"
@@ -182,13 +189,13 @@
                 </Material:PopupBox.ToggleContent>
 
                 <StackPanel>
-                    <Button ToolTip="Open pdf file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="pdf">
+                    <Button ToolTip="{x:Static p:Resources.ButtonOpenPdfTooltip}" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="pdf">
                         <Material:PackIcon Kind="FilePdf" Foreground="{StaticResource IdealForegroundColorBrush}"></Material:PackIcon>
                     </Button>
-                    <Button ToolTip="Open excel file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="excel">
+                    <Button ToolTip="{x:Static p:Resources.ButtonOpenExcelTooltip}" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="excel">
                         <Material:PackIcon Kind="FileExcel" Foreground="{StaticResource IdealForegroundColorBrush}"></Material:PackIcon>
                     </Button>
-                    <Button ToolTip="Open word file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="word">
+                    <Button ToolTip="{x:Static p:Resources.ButtonOpenWordTooltip}" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="word">
                         <Material:PackIcon Kind="FileWord" Foreground="{StaticResource IdealForegroundColorBrush}"></Material:PackIcon>
                     </Button>
                 </StackPanel>

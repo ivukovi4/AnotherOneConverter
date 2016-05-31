@@ -20,5 +20,9 @@ namespace AnotherOneConverter.WPF {
                 ((MainViewModel)DataContext).ActiveProject.AddDocument(files);
             }
         }
+
+        private void OnExitClick(object sender, RoutedEventArgs e) {
+            Close();
+        }
     }
 }

@@ -161,7 +161,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 var statusInfo = DisplayName;
 
                 if (Progress.HasValue) {
-                    statusInfo += string.Format(", Converting '{0}'...", Documents[Progress.Value].FileName);
+                    statusInfo += string.Format(Properties.Resources.ConvertingFormat, Documents[Progress.Value].FileName);
                 }
                 else if (ActiveDocument != null) {
                     statusInfo += string.Format(", {0}", ActiveDocument.FileName);
@@ -197,7 +197,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private void OnOpenDocuments(string type) {
             var openFileDialog = new System.Windows.Forms.OpenFileDialog {
                 Multiselect = true,
-                Filter = "All|*.doc;*.docx;*.xls;*.xlsx;*.pdf|Word|*.doc;*.docx|Excel|*.xls;*.xlsx|Pdf|*.pdf"
+                Filter = string.Format("{0}|*.doc;*.docx;*.xls;*.xlsx;*.pdf|Word|*.doc;*.docx|Excel|*.xls;*.xlsx|Pdf|*.pdf", Properties.Resources.FilterAllTitle)
             };
 
             switch (type.ToLowerInvariant()) {
