@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using AnotherOneConverter.WPF.Settings;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;
 using log4net;
@@ -11,7 +12,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,6 +44,27 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         public MainViewModel MainViewModel { get; set; }
+
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public ProjectSettings Settings {
+            get {
+                return new ProjectSettings(this);
+            }
+            set {
+                if (value.Id != Guid.Empty) {
+                    Id = value.Id;
+                }
+
+                PdfExportPath = value.PdfExportPath;
+
+                foreach (var filePath in value.Documents) {
+                    AddDocument(filePath);
+                }
+            }
+        }
+
+        public string PdfExportPath { get; set; }
 
         private string _displayName = string.Format("Untitled {0}", NameCounter++);
         public string DisplayName {
@@ -213,7 +234,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             JsonSerializer serializer = new JsonSerializer();
             using (var streamWriter = File.CreateText(FileName))
             using (var jsonWriter = new JsonTextWriter(streamWriter)) {
-                serializer.Serialize(jsonWriter, Documents.Select(d => d.FilePath));
+                serializer.Serialize(jsonWriter, Settings);
             }
         }
 
@@ -315,7 +336,23 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private async void OnExportToOne() {
+        private void OnExportToOne() {
+            if (string.IsNullOrEmpty(PdfExportPath)) {
+                OnExportToOneAs();
+            }
+            else {
+                OnExportToOne(PdfExportPath);
+            }
+        }
+
+        private RelayCommand _exportToOneAs;
+        public RelayCommand ExportToOneAs {
+            get {
+                return _exportToOneAs ?? (_exportToOneAs = new RelayCommand(OnExportToOneAs));
+            }
+        }
+
+        private void OnExportToOneAs() {
             if (Documents.Count == 0)
                 return;
 
@@ -328,13 +365,19 @@ namespace AnotherOneConverter.WPF.ViewModel {
             if (saveFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
+            OnExportToOne(saveFileDialog.FileName);
+        }
+
+        private async void OnExportToOne(string targetFile) {
+            PdfExportPath = targetFile;
+
             using (var outputDocument = new PdfDocument()) {
                 foreach (var filePath in await ExportWithProgressAsync(Path.GetTempPath())) {
                     try {
                         using (var inputDocument = PdfReader.Open(filePath, PdfDocumentOpenMode.Import)) {
                             for (int i = 0; i < inputDocument.PageCount; i++) {
                                 outputDocument.AddPage(inputDocument.Pages[i]);
-                                outputDocument.Save(saveFileDialog.FileName);
+                                outputDocument.Save(targetFile);
                             }
                         }
                     }

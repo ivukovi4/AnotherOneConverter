@@ -23,24 +23,15 @@ namespace AnotherOneConverter.WPF.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string RecentProjects {
-            get {
-                return ((string)(this["RecentProjects"]));
-            }
-        }
-        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastProjects {
+        public string MainViewModel {
             get {
-                return ((string)(this["LastProjects"]));
+                return ((string)(this["MainViewModel"]));
             }
             set {
-                this["LastProjects"] = value;
+                this["MainViewModel"] = value;
             }
         }
     }

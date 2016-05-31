@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using AnotherOneConverter.WPF.Settings;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using log4net;
 using MahApps.Metro.Controls.Dialogs;
@@ -6,6 +7,8 @@ using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
@@ -34,12 +37,68 @@ namespace AnotherOneConverter.WPF.ViewModel {
             _dialogCoordinator = dialogCoordinator;
 
             if (IsInDesignMode) {
-                OnCreateProject();
-                OnCreateProject();
-                OnCreateProject();
+                AddProject();
+                AddProject();
+                AddProject();
+            }
+            else if (string.IsNullOrEmpty(Properties.Settings.Default.MainViewModel)) {
+                AddProject();
             }
             else {
-                OnCreateProject();
+                RestoreFromSettings();
+            }
+
+            Projects.CollectionChanged += OnProjectsCollectionChanged;
+
+            PropertyChanged += OnMainPropertyChanged;
+        }
+
+        private void OnProjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (e.OldItems != null) {
+                foreach (ProjectViewModel project in e.OldItems) {
+                    project.PropertyChanged -= OnProjectPropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null) {
+                foreach (ProjectViewModel project in e.NewItems) {
+                    project.PropertyChanged -= OnProjectPropertyChanged;
+                    project.PropertyChanged += OnProjectPropertyChanged;
+                }
+            }
+
+            StoreSettings();
+        }
+
+        private void OnProjectPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            StoreSettings();
+        }
+
+        private void OnMainPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            StoreSettings();
+        }
+
+        private void RestoreFromSettings() {
+            Settings = JsonConvert.DeserializeObject<MainSettings>(Properties.Settings.Default.MainViewModel);
+        }
+
+        private void StoreSettings() {
+            Properties.Settings.Default.MainViewModel = JsonConvert.SerializeObject(Settings);
+            Properties.Settings.Default.Save();
+        }
+
+        public MainSettings Settings {
+            get {
+                return new MainSettings(this);
+            }
+            set {
+                foreach (var projectSettings in value.Projects) {
+                    AddProject(projectSettings);
+                }
+
+                if (value.ActiveProjectId.HasValue) {
+                    ActiveProject = Projects.FirstOrDefault(p => p.Id == value.ActiveProjectId.Value);
+                }
             }
         }
 
@@ -68,6 +127,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private void OnClosing() {
+            StoreSettings();
         }
 
         private RelayCommand _createProject;
@@ -78,14 +138,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private void OnCreateProject() {
-            var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
-            project.MainViewModel = this;
-
-            Projects.Add(project);
-
-            if (ActiveProject == null) {
-                ActiveProject = project;
-            }
+            AddProject();
         }
 
         private RelayCommand _openProject;
@@ -97,40 +150,56 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         private void OnOpenProject() {
             var openFileDialog = new System.Windows.Forms.OpenFileDialog { Filter = "Json|*.json" };
-
             if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
             // project already opened
-            if (Projects.Select(p => p.FileName).Contains(openFileDialog.FileName)) 
+            if (Projects.Select(p => p.FileName).Contains(openFileDialog.FileName))
                 return;
 
             try {
-                var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
-                project.MainViewModel = this;
-                project.FileName = openFileDialog.FileName;
-
                 var jsonSerializer = new JsonSerializer();
                 using (var fileStream = File.OpenRead(openFileDialog.FileName))
                 using (var streamReader = new StreamReader(fileStream))
                 using (var jsonReader = new JsonTextReader(streamReader)) {
-                    foreach (var filePath in jsonSerializer.Deserialize<string[]>(jsonReader)) {
-                        project.AddDocument(filePath);
-                    }
+                    AddProject(jsonSerializer.Deserialize<ProjectSettings>(jsonReader),
+                        fileName: openFileDialog.FileName,
+                        replaceExisting: true,
+                        isActive: true);
                 }
-
-                if (Projects.Count == 1 && Projects[0].IsDirty == false) {
-                    Projects.RemoveAt(0);
-                }
-
-                Projects.Add(project);
-
-                ActiveProject = project;
             }
             catch (Exception ex) {
                 Log.Error(string.Format("Can't open project '{0}'", openFileDialog.FileName), ex);
 
                 _dialogCoordinator.ShowMessageAsync(this, ex.GetType().Name, ex.Message);
+            }
+        }
+
+        private void AddProject(bool replaceExisting = false, bool isActive = false) {
+            var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
+            project.MainViewModel = this;
+
+            AddProject(project, replaceExisting, isActive);
+        }
+
+        private void AddProject(ProjectSettings projectSettings, string fileName = null, bool replaceExisting = false, bool isActive = false) {
+            var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
+            project.MainViewModel = this;
+            project.FileName = fileName;
+            project.Settings = projectSettings;
+
+            AddProject(project, replaceExisting, isActive);
+        }
+
+        private void AddProject(ProjectViewModel project, bool replaceExisting = false, bool isActive = false) {
+            if (replaceExisting && Projects.Count == 1 && Projects[0].IsDirty == false) {
+                Projects.RemoveAt(0);
+            }
+
+            Projects.Add(project);
+
+            if (isActive || ActiveProject == null) {
+                ActiveProject = project;
             }
         }
     }
