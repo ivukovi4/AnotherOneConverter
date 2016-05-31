@@ -1,28 +1,29 @@
-﻿<Controls:MetroWindow
+﻿<MahApps:MetroWindow
     x:Class="AnotherOneConverter.WPF.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:AnotherOneConverter.WPF.Controls"
+    xmlns:Controls="clr-namespace:AnotherOneConverter.WPF.Controls"
+    xmlns:Converters="clr-namespace:AnotherOneConverter.WPF.Converters"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:Material="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:MaterialConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
-    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:MahApps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:MahAppsDialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     mc:Ignorable="d"
     Title="PDF Converter"
     MinHeight="480"
     MinWidth="640"
-    Height="480"
-    Width="640"
+    Height="600"
+    Width="800"
     Icon="logo.ico"
     BorderThickness="1"
     Background="#fafafa"
     WindowTransitionsEnabled="False"
-    Dialog:DialogParticipation.Register="{Binding}"
+    MahAppsDialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
-    DataContext="{Binding Main, Source={StaticResource Locator}}">
+    DataContext="{Binding Main, Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -30,11 +31,18 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <Converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></Converters:BooleanToVisibilityConverter>
+
             <MaterialConverters:NullableToVisibilityConverter x:Key="NullableToVisibilityConverter"></MaterialConverters:NullableToVisibilityConverter>
+
+            <MaterialConverters:NotConverter x:Key="NotConverter"></MaterialConverters:NotConverter>
 
             <DataTemplate x:Key="ProjectHeaderTemplate">
                 <Border Padding="12">
-                    <TextBlock FontSize="18" Text="{Binding DisplayName}"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontSize="18" Text="{Binding DisplayName}"></TextBlock>
+                        <TextBlock FontSize="18" FontWeight="Bold" Visibility="{Binding IsDirty, Converter={StaticResource BooleanToVisibilityConverter}}">*</TextBlock>
+                    </StackPanel>
                 </Border>
             </DataTemplate>
 
@@ -48,73 +56,14 @@
                     HeadersVisibility="Column"
                     SelectionUnit="FullRow"
                     GridLinesVisibility="Horizontal"
-                    Drop="DataGrid_Drop"
+                    Drop="OnDataGridDrop"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource NotConverter}}"
                     ItemsSource="{Binding Documents}"
                     SelectedItem="{Binding ActiveDocument, Mode=TwoWay}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="File Name" Binding="{Binding FileName, Mode=OneWay}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Changed" Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"></DataGridTextColumn>
                     </DataGrid.Columns>
-
-                    <DataGrid.Template>
-                        <ControlTemplate TargetType="{x:Type DataGrid}">
-                            <Border
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Background="{TemplateBinding Background}"
-                                Padding="{TemplateBinding Padding}"
-                                SnapsToDevicePixels="True">
-                                <ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
-                                    <ScrollViewer.Template>
-                                        <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="*"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Button Command="{x:Static DataGrid.SelectAllCommand}" Focusable="false" Style="{DynamicResource {ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.All}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                                                <DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Column="1" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                                                <ScrollContentPresenter
-                                                    x:Name="PART_ScrollContentPresenter"
-                                                    CanContentScroll="{TemplateBinding CanContentScroll}"
-                                                    Grid.ColumnSpan="2"
-                                                    Grid.Row="1">
-
-
-                                                </ScrollContentPresenter>
-                                                <ScrollBar
-                                                    x:Name="PART_VerticalScrollBar"
-                                                    Grid.Column="2"
-                                                    Maximum="{TemplateBinding ScrollableHeight}"
-                                                    Orientation="Vertical"
-                                                    Grid.Row="1"
-                                                    Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                                                    Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                                    ViewportSize="{TemplateBinding ViewportHeight}"/>
-                                                <Grid Grid.Column="1" Grid.Row="2">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
-                                                </Grid>
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </ScrollViewer.Template>
-
-                                    <Border Padding="0,0,0,88">
-                                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                    </Border>
-                                </ScrollViewer>
-                            </Border>
-                        </ControlTemplate>
-                    </DataGrid.Template>
                 </DataGrid>
             </DataTemplate>
         </ResourceDictionary>
@@ -139,7 +88,8 @@
                 <MenuItem Header="Open File..." Command="{Binding ActiveProject.OpenDocuments}" CommandParameter=""></MenuItem>
                 <MenuItem Header="Export" Command="{Binding ActiveProject.Export}"></MenuItem>
                 <MenuItem Header="Export As..." Command="{Binding ActiveProject.ExportAs}"></MenuItem>
-                <MenuItem Header="Export To One" Command="{Binding ActiveProject.ExportToOne}"></MenuItem>
+                <MenuItem Header="Export to One" Command="{Binding ActiveProject.ExportToOne}"></MenuItem>
+                <MenuItem Header="Export to One As..." Command="{Binding ActiveProject.ExportToOneAs}"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Exit"></MenuItem>
             </MenuItem>
@@ -168,9 +118,29 @@
             VerticalAlignment="Bottom"
             HorizontalAlignment="Right">
 
+            <Button
+                ToolTip="Up"
+                Margin="0,0,12,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ActiveProject.DocumentUp}"
+                Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                <Material:PackIcon Kind="ArrowUpBold" Height="24" Width="24" />
+            </Button>
+
+            <Button
+                ToolTip="Down"
+                Margin="0,0,12,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ActiveProject.DocumentDown}"
+                Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                <Material:PackIcon Kind="ArrowDownBold" Height="24" Width="24" />
+            </Button>
+
             <Material:PopupBox
                 ToolTip="Export"
                 Margin="0,0,18,0"
+                PopupMode="MouseOver"
+                IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
                 ToggleCheckedContentCommand="{Binding ActiveProject.Export}"
                 Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}">
                 <Material:PopupBox.ToggleCheckedContent>
@@ -178,12 +148,16 @@
                 </Material:PopupBox.ToggleCheckedContent>
 
                 <Material:PopupBox.ToggleContent>
-                    <Material:PackIcon Kind="ArrowUp" Width="24" Height="24"></Material:PackIcon>
+                    <Material:PackIcon Kind="FileExport" Width="24" Height="24"></Material:PackIcon>
                 </Material:PopupBox.ToggleContent>
 
                 <StackPanel>
+                    <Button ToolTip="Export to One As" Command="{Binding ActiveProject.ExportToOneAs}" Foreground="{StaticResource IdealForegroundColorBrush}">
+                        1 As
+                    </Button>
+
                     <Button ToolTip="Export to One" Command="{Binding ActiveProject.ExportToOne}" Foreground="{StaticResource IdealForegroundColorBrush}">
-                        One
+                        1
                     </Button>
 
                     <Button ToolTip="Export As" Command="{Binding ActiveProject.ExportAs}" Foreground="{StaticResource IdealForegroundColorBrush}">
@@ -194,12 +168,18 @@
 
             <Material:PopupBox
                 ToolTip="Open"
+                PopupMode="MouseOver"
+                IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
                 ToggleCheckedContentCommand="{Binding ActiveProject.OpenDocuments}"
                 ToggleCheckedContentCommandParameter=""
                 Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}">
                 <Material:PopupBox.ToggleCheckedContent>
-                    <Material:PackIcon Kind="File" Width="24" Height="24"></Material:PackIcon>
+                    <Material:PackIcon Kind="ArrowTopRight" Width="24" Height="24"></Material:PackIcon>
                 </Material:PopupBox.ToggleCheckedContent>
+
+                <Material:PopupBox.ToggleContent>
+                    <Material:PackIcon Kind="File" Width="24" Height="24"></Material:PackIcon>
+                </Material:PopupBox.ToggleContent>
 
                 <StackPanel>
                     <Button ToolTip="Open pdf file" Command="{Binding ActiveProject.OpenDocuments}" CommandParameter="pdf">
@@ -224,7 +204,7 @@
             Visibility="{Binding ActiveProject.Progress, Converter={StaticResource NullableToVisibilityConverter}}">
             <ProgressBar
                 IsIndeterminate="True"
-                local:ProgressBarExtension.AnimatedValue="{Binding ActiveProject.Progress}"
+                Controls:ProgressBarExtension.AnimatedValue="{Binding ActiveProject.Progress}"
                 Maximum="{Binding ActiveProject.Documents.Count}"
                 Style="{StaticResource MaterialDesignCircularProgressBar}"></ProgressBar>
         </Material:Card>
@@ -234,4 +214,4 @@
         </StatusBar>
     </Grid>
 
-</Controls:MetroWindow>
+</MahApps:MetroWindow>

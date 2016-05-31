@@ -14,7 +14,7 @@ namespace AnotherOneConverter.WPF {
             DispatcherHelper.Initialize();
         }
 
-        private void DataGrid_Drop(object sender, DragEventArgs e) {
+        private void OnDataGridDrop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 ((MainViewModel)DataContext).ActiveProject.AddDocument(files);

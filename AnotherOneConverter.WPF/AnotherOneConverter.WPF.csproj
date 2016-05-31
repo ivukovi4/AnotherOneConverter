@@ -153,6 +153,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\ProgressBarExtension.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Settings\MainSettings.cs" />
     <Compile Include="Settings\ProjectSettings.cs" />
     <Compile Include="Settings\ProjectSettingsExt.cs" />

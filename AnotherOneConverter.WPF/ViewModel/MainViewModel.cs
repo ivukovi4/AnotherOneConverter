@@ -48,6 +48,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 RestoreFromSettings();
             }
 
+            foreach (var project in Projects) {
+                project.PropertyChanged += OnProjectPropertyChanged;
+            }
+
             Projects.CollectionChanged += OnProjectsCollectionChanged;
 
             PropertyChanged += OnMainPropertyChanged;
@@ -162,10 +166,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 using (var fileStream = File.OpenRead(openFileDialog.FileName))
                 using (var streamReader = new StreamReader(fileStream))
                 using (var jsonReader = new JsonTextReader(streamReader)) {
-                    AddProject(jsonSerializer.Deserialize<ProjectSettings>(jsonReader),
+                    var project = AddProject(jsonSerializer.Deserialize<ProjectSettings>(jsonReader),
                         fileName: openFileDialog.FileName,
                         replaceExisting: true,
                         isActive: true);
+
+                    project.IsDirty = false;
                 }
             }
             catch (Exception ex) {
@@ -175,23 +181,23 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private void AddProject(bool replaceExisting = false, bool isActive = false) {
+        private ProjectViewModel AddProject(bool replaceExisting = false, bool isActive = false) {
             var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
             project.MainViewModel = this;
 
-            AddProject(project, replaceExisting, isActive);
+            return AddProject(project, replaceExisting, isActive);
         }
 
-        private void AddProject(ProjectSettings projectSettings, string fileName = null, bool replaceExisting = false, bool isActive = false) {
+        private ProjectViewModel AddProject(ProjectSettings projectSettings, string fileName = null, bool replaceExisting = false, bool isActive = false) {
             var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
             project.MainViewModel = this;
             project.FileName = fileName;
             project.Settings = projectSettings;
 
-            AddProject(project, replaceExisting, isActive);
+            return AddProject(project, replaceExisting, isActive);
         }
 
-        private void AddProject(ProjectViewModel project, bool replaceExisting = false, bool isActive = false) {
+        private ProjectViewModel AddProject(ProjectViewModel project, bool replaceExisting = false, bool isActive = false) {
             if (replaceExisting && Projects.Count == 1 && Projects[0].IsDirty == false) {
                 Projects.RemoveAt(0);
             }
@@ -201,6 +207,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
             if (isActive || ActiveProject == null) {
                 ActiveProject = project;
             }
+
+            return project;
         }
     }
 }

@@ -56,15 +56,30 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     Id = value.Id;
                 }
 
+                FileName = value.FileName;
                 PdfExportPath = value.PdfExportPath;
 
                 foreach (var filePath in value.Documents) {
                     AddDocument(filePath);
                 }
+
+                if (value is ProjectSettingsExt) {
+                    IsDirty = ((ProjectSettingsExt)value).IsDirty;
+                }
             }
         }
 
-        public string PdfExportPath { get; set; }
+        private string _pdfExportPath;
+        public string PdfExportPath {
+            get {
+                return _pdfExportPath;
+            }
+            set {
+                if (Set(ref _pdfExportPath, value)) {
+                    IsDirty = true;
+                }
+            }
+        }
 
         private string _displayName = string.Format("Untitled {0}", NameCounter++);
         public string DisplayName {
@@ -86,6 +101,9 @@ namespace AnotherOneConverter.WPF.ViewModel {
             set {
                 if (Set(ref _activeDocument, value)) {
                     RaisePropertyChanged(() => StatusInfo);
+
+                    DocumentUp.RaiseCanExecuteChanged();
+                    DocumentDown.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -97,6 +115,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
             set {
                 if (Set(ref _fileName, value)) {
+                    IsDirty = true;
                     DisplayName = Path.GetFileNameWithoutExtension(FileName);
                 }
             }
@@ -110,7 +129,20 @@ namespace AnotherOneConverter.WPF.ViewModel {
             set {
                 if (Set(ref _progress, value)) {
                     RaisePropertyChanged(() => StatusInfo);
+                    RaisePropertyChanged(() => IsLoading);
+
+                    OpenDocuments.RaiseCanExecuteChanged();
+                    Export.RaiseCanExecuteChanged();
+                    ExportAs.RaiseCanExecuteChanged();
+                    ExportToOne.RaiseCanExecuteChanged();
+                    ExportToOneAs.RaiseCanExecuteChanged();
                 }
+            }
+        }
+
+        public bool IsLoading {
+            get {
+                return _progress.HasValue;
             }
         }
 
@@ -158,7 +190,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private RelayCommand<string> _openDocuments;
         public RelayCommand<string> OpenDocuments {
             get {
-                return _openDocuments ?? (_openDocuments = new RelayCommand<string>(OnOpenDocuments));
+                return _openDocuments ?? (_openDocuments = new RelayCommand<string>(OnOpenDocuments, (t) => IsLoading == false));
             }
         }
 
@@ -236,6 +268,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
             using (var jsonWriter = new JsonTextWriter(streamWriter)) {
                 serializer.Serialize(jsonWriter, Settings);
             }
+
+            IsDirty = false;
         }
 
         private RelayCommand _close;
@@ -259,7 +293,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private RelayCommand _export;
         public RelayCommand Export {
             get {
-                return _export ?? (_export = new RelayCommand(OnExport));
+                return _export ?? (_export = new RelayCommand(OnExport, () => IsLoading == false));
             }
         }
 
@@ -273,7 +307,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private RelayCommand _exportAs;
         public RelayCommand ExportAs {
             get {
-                return _exportAs ?? (_exportAs = new RelayCommand(OnExportAs));
+                return _exportAs ?? (_exportAs = new RelayCommand(OnExportAs, () => IsLoading == false));
             }
         }
 
@@ -332,7 +366,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private RelayCommand _exportToOne;
         public RelayCommand ExportToOne {
             get {
-                return _exportToOne ?? (_exportToOne = new RelayCommand(OnExportToOne));
+                return _exportToOne ?? (_exportToOne = new RelayCommand(OnExportToOne, () => IsLoading == false));
             }
         }
 
@@ -348,7 +382,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private RelayCommand _exportToOneAs;
         public RelayCommand ExportToOneAs {
             get {
-                return _exportToOneAs ?? (_exportToOneAs = new RelayCommand(OnExportToOneAs));
+                return _exportToOneAs ?? (_exportToOneAs = new RelayCommand(OnExportToOneAs, () => IsLoading == false));
             }
         }
 
@@ -387,6 +421,50 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     }
                 }
             }
+        }
+
+        private RelayCommand _documentUp;
+        public RelayCommand DocumentUp {
+            get {
+                return _documentUp ?? (_documentUp = new RelayCommand(OnDocumentUp,
+                    () => ActiveDocument != null && Documents.IndexOf(ActiveDocument) > 0));
+            }
+        }
+
+        private void OnDocumentUp() {
+            if (ActiveDocument == null)
+                return;
+
+            var activeDocument = ActiveDocument;
+            var index = Documents.IndexOf(activeDocument);
+            if (index == 0)
+                return;
+
+            Documents.RemoveAt(index);
+            Documents.Insert(index - 1, activeDocument);
+            ActiveDocument = activeDocument;
+        }
+
+        private RelayCommand _documentDown;
+        public RelayCommand DocumentDown {
+            get {
+                return _documentDown ?? (_documentDown = new RelayCommand(OnDocumentDown,
+                    () => ActiveDocument != null && Documents.IndexOf(ActiveDocument) < Documents.Count - 1));
+            }
+        }
+
+        private void OnDocumentDown() {
+            if (ActiveDocument == null)
+                return;
+
+            var activeDocument = ActiveDocument;
+            var index = Documents.IndexOf(activeDocument);
+            if (index == Documents.Count - 1)
+                return;
+
+            Documents.RemoveAt(index);
+            Documents.Insert(index + 1, activeDocument);
+            ActiveDocument = activeDocument;
         }
     }
 }
