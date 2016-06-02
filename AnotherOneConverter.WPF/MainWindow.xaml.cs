@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace AnotherOneConverter.WPF {
     /// <summary>
@@ -14,15 +15,26 @@ namespace AnotherOneConverter.WPF {
             DispatcherHelper.Initialize();
         }
 
+        protected MainViewModel MainViewModel {
+            get {
+                return (MainViewModel)DataContext;
+            }
+        }
+
         private void OnDataGridDrop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                ((MainViewModel)DataContext).ActiveProject.AddDocument(files);
+                MainViewModel.ActiveProject.AddDocument((string[])e.Data.GetData(DataFormats.FileDrop));
             }
         }
 
         private void OnExitClick(object sender, RoutedEventArgs e) {
             Close();
+        }
+
+        private void OnDataGridSorting(object sender, DataGridSortingEventArgs e) {
+            e.Handled = true;
+
+            MainViewModel.ActiveProject.OnSort(e.Column.SortMemberPath);
         }
     }
 }

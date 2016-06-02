@@ -152,6 +152,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\BindingProxy.cs" />
     <Compile Include="Controls\ProgressBarExtension.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Properties\Resources.ru-RU.Designer.cs">
@@ -162,6 +163,7 @@
     <Compile Include="Settings\MainSettings.cs" />
     <Compile Include="Settings\ProjectSettings.cs" />
     <Compile Include="Settings\ProjectSettingsExt.cs" />
+    <Compile Include="Core\SmartStringComparer.cs" />
     <Compile Include="ViewModel\DocumentFactory.cs" />
     <Compile Include="ViewModel\DocumentViewModel.cs" />
     <Compile Include="ViewModel\DummyDocumentFactory.cs" />

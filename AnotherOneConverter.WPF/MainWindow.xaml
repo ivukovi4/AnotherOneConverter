@@ -56,15 +56,33 @@
                     CanUserReorderColumns="False"
                     HeadersVisibility="Column"
                     SelectionUnit="FullRow"
-                    GridLinesVisibility="Horizontal"
+                    SelectionMode="Single"
                     Drop="OnDataGridDrop"
+                    Sorting="OnDataGridSorting"
+                    GridLinesVisibility="Horizontal"
                     IsEnabled="{Binding IsLoading, Converter={StaticResource NotConverter}}"
                     ItemsSource="{Binding Documents}"
                     SelectedItem="{Binding ActiveDocument, Mode=TwoWay}">
+
+                    <DataGrid.Resources>
+                        <Controls:BindingProxy x:Key="ProjectProxy" Data="{Binding}"></Controls:BindingProxy>
+                    </DataGrid.Resources>
+
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static p:Resources.ColumnFileNameHeader}" Binding="{Binding FileName, Mode=OneWay}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="{x:Static p:Resources.ColumnChangedHeader}" Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"></DataGridTextColumn>
+                        <DataGridTextColumn
+                            Width="*"
+                            Header="{x:Static p:Resources.ColumnFileNameHeader}"
+                            Binding="{Binding FileName}"
+                            SortDirection="{Binding Data.FileNameSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}">
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn
+                            Width="200"
+                            Header="{x:Static p:Resources.ColumnChangedHeader}"
+                            Binding="{Binding LastWriteTime, StringFormat=g}"
+                            SortDirection="{Binding Data.LastWriteTimeSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}"></DataGridTextColumn>
                     </DataGrid.Columns>
+
                 </DataGrid>
             </DataTemplate>
         </ResourceDictionary>

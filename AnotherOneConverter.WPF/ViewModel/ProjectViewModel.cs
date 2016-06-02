@@ -1,4 +1,5 @@
-﻿using AnotherOneConverter.WPF.Settings;
+﻿using AnotherOneConverter.WPF.Core;
+using AnotherOneConverter.WPF.Settings;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;
@@ -8,11 +9,12 @@ using Newtonsoft.Json;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -59,6 +61,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
                 FileName = value.FileName;
                 PdfExportPath = value.PdfExportPath;
+                FileNameSortDirection = value.FileNameSortDirection;
+                LastWriteTimeSortDirection = value.LastWriteTimeSortDirection;
 
                 foreach (var filePath in value.Documents) {
                     AddDocument(filePath);
@@ -445,6 +449,9 @@ namespace AnotherOneConverter.WPF.ViewModel {
             Documents.RemoveAt(index);
             Documents.Insert(index - 1, activeDocument);
             ActiveDocument = activeDocument;
+
+            FileNameSortDirection = null;
+            LastWriteTimeSortDirection = null;
         }
 
         private RelayCommand _documentDown;
@@ -467,6 +474,9 @@ namespace AnotherOneConverter.WPF.ViewModel {
             Documents.RemoveAt(index);
             Documents.Insert(index + 1, activeDocument);
             ActiveDocument = activeDocument;
+
+            FileNameSortDirection = null;
+            LastWriteTimeSortDirection = null;
         }
 
         private RelayCommand _deleteDocument;
@@ -488,6 +498,65 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
             else {
                 ActiveDocument = Documents.LastOrDefault();
+            }
+        }
+
+        private ListSortDirection? _fileNameSortDirection = null;
+        public ListSortDirection? FileNameSortDirection {
+            get {
+                return _fileNameSortDirection;
+            }
+            set {
+                Set(ref _fileNameSortDirection, value);
+            }
+        }
+
+        private ListSortDirection? _lastWriteTimeSortDirection = null;
+        public ListSortDirection? LastWriteTimeSortDirection {
+            get {
+                return _lastWriteTimeSortDirection;
+            }
+            set {
+                Set(ref _lastWriteTimeSortDirection, value);
+            }
+        }
+
+        public void OnSort(string propertyName) {
+            var targetProperty = typeof(DocumentViewModel).GetProperty(propertyName);
+            if (targetProperty == null)
+                throw new ArgumentException("propertyName");
+
+            var directionProperty = GetType().GetProperty(propertyName + "SortDirection");
+            if (directionProperty == null)
+                throw new ArgumentException("propertyName");
+
+            var currentDirection = (ListSortDirection?)directionProperty.GetValue(this);
+            if (currentDirection.HasValue == false) {
+                currentDirection = ListSortDirection.Ascending;
+            }
+            else if (currentDirection.Value == ListSortDirection.Descending) {
+                currentDirection = ListSortDirection.Ascending;
+            }
+            else {
+                currentDirection = ListSortDirection.Descending;
+            }
+
+            directionProperty.SetValue(this, currentDirection);
+
+            IList<DocumentViewModel> orderedCollection;
+            if (targetProperty.PropertyType == typeof(string)) {
+                orderedCollection = Documents.OrderBy(d => (string)targetProperty.GetValue(d), new SmartStringComparer(currentDirection.Value)).ToList();
+            }
+            else if (currentDirection == ListSortDirection.Ascending) {
+                orderedCollection = Documents.OrderBy(d => targetProperty.GetValue(d)).ToList();
+            }
+            else {
+                orderedCollection = Documents.OrderByDescending(d => targetProperty.GetValue(d)).ToList();
+            }
+
+            Documents.Clear();
+            foreach (var document in orderedCollection) {
+                Documents.Add(document);
             }
         }
     }
