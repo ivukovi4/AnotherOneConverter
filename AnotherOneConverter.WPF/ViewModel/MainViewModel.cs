@@ -91,6 +91,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
             Properties.Settings.Default.Save();
         }
 
+        public bool IsActive { get; set; }
+
         public MainSettings Settings {
             get {
                 return new MainSettings(this);

@@ -1,3 +1,4 @@
+using AnotherOneConverter.WPF.Core;
 using Autofac;
 using Autofac.Extras.CommonServiceLocator;
 using GalaSoft.MvvmLight;
@@ -21,12 +22,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
             if (ViewModelBase.IsInDesignModeStatic) {
                 // Create design time view services and models
-                builder.RegisterType<DummyDocumentFactory>().As<IDocumentFactory>();
+                builder.RegisterType<DummyDocumentFactory>().As<IDocumentFactory>().SingleInstance();
                 builder.RegisterType<DummyDocumentViewModel>().As<DocumentViewModel>();
             }
             else {
                 // Create run time view services and models
-                builder.RegisterType<DocumentFactory>().As<IDocumentFactory>();
+                builder.RegisterType<DocumentFactory>().As<IDocumentFactory>().SingleInstance();
                 builder.RegisterType<WordDocumentViewModel>().As<DocumentViewModel>();
                 builder.RegisterType<ExcelDocumentViewModel>().As<DocumentViewModel>();
                 builder.RegisterType<PdfDocumentViewModel>().As<DocumentViewModel>();
@@ -36,6 +37,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             builder.RegisterType<ProjectViewModel>();
 
             builder.RegisterType<DialogCoordinator>().As<IDialogCoordinator>();
+            builder.RegisterType<WpfNotificationService>().As<INotificationService>().SingleInstance();
 
             _container = builder.Build();
             _serviceLocator = new AutofacServiceLocator(_container);

@@ -1,4 +1,5 @@
 ﻿using AnotherOneConverter.WPF.Core;
+using AnotherOneConverter.WPF.Properties;
 using AnotherOneConverter.WPF.Settings;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -26,10 +27,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         private readonly IDocumentFactory _documentFactory;
         private readonly IDialogCoordinator _dialogCoordinator;
+        private readonly INotificationService _notificationService;
 
-        public ProjectViewModel(IDocumentFactory documentFactory, IDialogCoordinator dialogCoordinator) {
+        public ProjectViewModel(IDocumentFactory documentFactory, IDialogCoordinator dialogCoordinator, INotificationService notificationService) {
             _documentFactory = documentFactory;
             _dialogCoordinator = dialogCoordinator;
+            _notificationService = notificationService;
 
             if (IsInDesignMode) {
                 Documents.Add(_documentFactory.Create(null));
@@ -308,6 +311,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 return;
 
             await ExportWithProgressAsync(null);
+
+            ShowConversationSuccessMessage();
         }
 
         private RelayCommand _exportAs;
@@ -326,6 +331,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 return;
 
             await ExportWithProgressAsync(folderBrowserDialog.SelectedPath);
+
+            ShowConversationSuccessMessage();
         }
 
         private async Task<IList<string>> ExportWithProgressAsync(string targetDirectory) {
@@ -346,8 +353,15 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
+        private async void ShowConversationSuccessMessage() {
+            if (MainViewModel.IsActive == false) {
+                await DispatcherHelper.RunAsync(() =>
+                    _notificationService.Show(Resources.ConvertationSuccessTitle, Resources.ConvertationSuccessMessage));
+            }
+        }
+
         private Task<IList<string>> ExportWithProgressAsync(string tartgetDirectory, IProgress<int> progress, CancellationToken cancellationToken) {
-            return Task.Run(() => {
+            return Task.Run(async () => {
                 IList<string> result = new List<string>();
 
                 for (int i = 0; i < Documents.Count; i++) {
@@ -357,7 +371,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
                         result.Add(Documents[i].ConvertToPdf(tartgetDirectory));
                     }
                     catch (Exception ex) {
-                        Log.Error(string.Format("Can't convert document '{0}'", Documents[i].FileName), ex);
+                        var message = string.Format(Resources.ErrorConversationFailed, Documents[i].FileName);
+
+                        Log.Error(message, ex);
+
+                        await DispatcherHelper.RunAsync(() => _notificationService.ShowError(Resources.ErrorTitle, message));
+
                         continue;
                     }
                     finally {
@@ -427,6 +446,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     }
                 }
             }
+
+            ShowConversationSuccessMessage();
         }
 
         private RelayCommand _documentUp;

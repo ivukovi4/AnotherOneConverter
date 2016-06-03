@@ -12,6 +12,7 @@
     xmlns:MaterialConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
     xmlns:MahApps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:MahAppsDialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:Taskbar="http://www.hardcodet.net/taskbar" 
     mc:Ignorable="d"
     Title="{x:Static p:Resources.ApplicationTitle}"
     MinHeight="480"
@@ -22,6 +23,8 @@
     BorderThickness="1"
     Background="#fafafa"
     WindowTransitionsEnabled="False"
+    Activated="OnActivated"
+    Deactivated="OnDeactivated"
     MahAppsDialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen">
@@ -94,13 +97,17 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="20px"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
+
+        <Taskbar:TaskbarIcon
+            x:Name="TaskbarIcon"
+            IconSource="logo.ico"
+            ToolTipText="{Binding {x:Static p:Resources.ApplicationTitle}}"></Taskbar:TaskbarIcon>
 
         <Menu>
             <MenuItem Header="{x:Static p:Resources.MenuItemFileHeader}">

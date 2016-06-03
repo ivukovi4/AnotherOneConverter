@@ -196,6 +196,24 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Сonversion successfully completed..
+        /// </summary>
+        public static string ConvertationSuccessMessage {
+            get {
+                return ResourceManager.GetString("ConvertationSuccessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success!.
+        /// </summary>
+        public static string ConvertationSuccessTitle {
+            get {
+                return ResourceManager.GetString("ConvertationSuccessTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to , Converting &apos;{0}&apos;....
         /// </summary>
         public static string ConvertingFormat {
@@ -205,11 +223,39 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t convert file &apos;{0}&apos;.
+        /// </summary>
+        public static string ErrorConversationFailed {
+            get {
+                return ResourceManager.GetString("ErrorConversationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string ErrorTitle {
+            get {
+                return ResourceManager.GetString("ErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         public static string FilterAllTitle {
             get {
                 return ResourceManager.GetString("FilterAllTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon LogoIcon {
+            get {
+                object obj = ResourceManager.GetObject("LogoIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

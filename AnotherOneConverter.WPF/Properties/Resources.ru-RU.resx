@@ -162,8 +162,20 @@
   <data name="ColumnFileNameHeader" xml:space="preserve">
     <value>Имя файла</value>
   </data>
+  <data name="ConvertationSuccessMessage" xml:space="preserve">
+    <value>Конвертация успешно завершена.</value>
+  </data>
+  <data name="ConvertationSuccessTitle" xml:space="preserve">
+    <value>Успех!</value>
+  </data>
   <data name="ConvertingFormat" xml:space="preserve">
     <value>, Конвертация '{0}'...</value>
+  </data>
+  <data name="ErrorConversationFailed" xml:space="preserve">
+    <value>Не удалось конвертировать файл '{0}'</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Ошибка</value>
   </data>
   <data name="FilterAllTitle" xml:space="preserve">
     <value>Все</value>

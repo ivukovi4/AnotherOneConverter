@@ -162,11 +162,27 @@
   <data name="ColumnFileNameHeader" xml:space="preserve">
     <value>File Name</value>
   </data>
+  <data name="ConvertationSuccessMessage" xml:space="preserve">
+    <value>Сonversion successfully completed.</value>
+  </data>
+  <data name="ConvertationSuccessTitle" xml:space="preserve">
+    <value>Success!</value>
+  </data>
   <data name="ConvertingFormat" xml:space="preserve">
     <value>, Converting '{0}'...</value>
   </data>
+  <data name="ErrorConversationFailed" xml:space="preserve">
+    <value>Can't convert file '{0}'</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
   <data name="FilterAllTitle" xml:space="preserve">
     <value>All</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="LogoIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="MenuItemCloseProjectHeader" xml:space="preserve">
     <value>Close Project</value>

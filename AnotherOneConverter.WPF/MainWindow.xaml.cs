@@ -1,6 +1,8 @@
-﻿using AnotherOneConverter.WPF.ViewModel;
+﻿using AnotherOneConverter.WPF.Core;
+using AnotherOneConverter.WPF.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls;
+using Microsoft.Practices.ServiceLocation;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,6 +15,9 @@ namespace AnotherOneConverter.WPF {
             InitializeComponent();
 
             DispatcherHelper.Initialize();
+
+            var notificationService = (WpfNotificationService)ServiceLocator.Current.GetInstance<INotificationService>();
+            notificationService.TaskbarIcon = TaskbarIcon;
         }
 
         protected MainViewModel MainViewModel {
@@ -35,6 +40,14 @@ namespace AnotherOneConverter.WPF {
             e.Handled = true;
 
             MainViewModel.ActiveProject.OnSort(e.Column.SortMemberPath);
+        }
+
+        private void OnActivated(object sender, System.EventArgs e) {
+            MainViewModel.IsActive = true;
+        }
+
+        private void OnDeactivated(object sender, System.EventArgs e) {
+            MainViewModel.IsActive = false;
         }
     }
 }
