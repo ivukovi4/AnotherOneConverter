@@ -181,7 +181,7 @@
     <value>Все</value>
   </data>
   <data name="MenuItemCloseProjectHeader" xml:space="preserve">
-    <value>Закрыть Проет</value>
+    <value>Закрыть Проект</value>
   </data>
   <data name="MenuItemExitHeader" xml:space="preserve">
     <value>Выход</value>

@@ -75,14 +75,14 @@
                         <DataGridTextColumn
                             Width="*"
                             Header="{x:Static p:Resources.ColumnFileNameHeader}"
-                            Binding="{Binding FileName}"
+                            Binding="{Binding FileName, Mode=OneWay}"
                             SortDirection="{Binding Data.FileNameSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}">
                         </DataGridTextColumn>
 
                         <DataGridTextColumn
                             Width="200"
                             Header="{x:Static p:Resources.ColumnChangedHeader}"
-                            Binding="{Binding LastWriteTime, StringFormat=g}"
+                            Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"
                             SortDirection="{Binding Data.LastWriteTimeSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}"></DataGridTextColumn>
                     </DataGrid.Columns>
 
@@ -173,7 +173,7 @@
 
             <Material:PopupBox
                 ToolTip="{x:Static p:Resources.PopupBoxExportTooltip}"
-                Margin="0,0,18,0"
+                Margin="0,0,12,0"
                 PopupMode="MouseOver"
                 IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
                 ToggleCheckedContentCommand="{Binding ActiveProject.Export}"
