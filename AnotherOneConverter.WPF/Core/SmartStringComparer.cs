@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 
@@ -12,10 +11,19 @@ namespace AnotherOneConverter.WPF.Core {
             _direction = direction;
         }
 
+        private bool IsMatchNotEmpty(string input) {
+            var match = _numberRegex.Match(input);
+            return match != null && string.IsNullOrEmpty(match.Value) == false;
+        }
+
+        private string GetMatchValue(string input) {
+            return _numberRegex.Match(input).Value;
+        }
+
         public int Compare(string x, string y) {
-            if (_numberRegex.IsMatch(x) && _numberRegex.IsMatch(y)) {
-                var nx = int.Parse(_numberRegex.Match(x).Value);
-                var ny = int.Parse(_numberRegex.Match(y).Value);
+            if (IsMatchNotEmpty(x) && IsMatchNotEmpty(y)) {
+                var nx = int.Parse(GetMatchValue(x));
+                var ny = int.Parse(GetMatchValue(y));
 
                 if (_direction == ListSortDirection.Ascending) {
                     return nx - ny;
