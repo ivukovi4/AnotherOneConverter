@@ -157,9 +157,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\BindingProxy.cs" />
+    <Compile Include="Controls\MultiSelectBehavior.cs" />
     <Compile Include="Controls\ProgressBarExtension.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Core\INotificationService.cs" />
+    <Compile Include="Core\SameAsComparer.cs" />
     <Compile Include="Core\WpfNotificationService.cs" />
     <Compile Include="Properties\Resources.ru-RU.Designer.cs">
       <DependentUpon>Resources.ru-RU.resx</DependentUpon>

@@ -59,13 +59,14 @@
                     CanUserReorderColumns="False"
                     HeadersVisibility="Column"
                     SelectionUnit="FullRow"
-                    SelectionMode="Single"
                     Drop="OnDataGridDrop"
                     Sorting="OnDataGridSorting"
                     GridLinesVisibility="Horizontal"
-                    IsEnabled="{Binding IsLoading, Converter={StaticResource NotConverter}}"
                     ItemsSource="{Binding Documents}"
-                    SelectedItem="{Binding ActiveDocument, Mode=TwoWay}">
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource NotConverter}}">
+                    <i:Interaction.Behaviors>
+                        <Controls:MultiSelectBehavior SelectedItems="{Binding ActiveDocuments}"></Controls:MultiSelectBehavior>
+                    </i:Interaction.Behaviors>
 
                     <DataGrid.Resources>
                         <Controls:BindingProxy x:Key="ProjectProxy" Data="{Binding}"></Controls:BindingProxy>
@@ -130,6 +131,7 @@
         </Menu>
 
         <TabControl
+            x:Name="TabControl"
             Grid.Row="1"
             SelectedItem="{Binding ActiveProject, Mode=TwoWay}"
             ItemsSource="{Binding Projects}"
@@ -148,7 +150,7 @@
                 ToolTip="{x:Static p:Resources.ButtonUpTooltip}"
                 Margin="0,0,12,0"
                 HorizontalAlignment="Left"
-                Command="{Binding ActiveProject.DocumentUp}"
+                Command="{Binding ActiveProject.DocumentUpCommand}"
                 Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
                 <Material:PackIcon Kind="ArrowUpBold" Height="24" Width="24" />
             </Button>
@@ -157,7 +159,7 @@
                 ToolTip="{x:Static p:Resources.ButtonDownTooltip}"
                 Margin="0,0,12,0"
                 HorizontalAlignment="Left"
-                Command="{Binding ActiveProject.DocumentDown}"
+                Command="{Binding ActiveProject.DocumentDownCommand}"
                 Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
                 <Material:PackIcon Kind="ArrowDownBold" Height="24" Width="24" />
             </Button>
@@ -166,7 +168,7 @@
                 ToolTip="{x:Static p:Resources.ButtonDeleteDocumentTooltip}"
                 Margin="0,0,12,0"
                 HorizontalAlignment="Left"
-                Command="{Binding ActiveProject.DeleteDocument}"
+                Command="{Binding ActiveProject.DeleteDocumentsCommand}"
                 Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
                 <Material:PackIcon Kind="Delete" Height="24" Width="24" />
             </Button>

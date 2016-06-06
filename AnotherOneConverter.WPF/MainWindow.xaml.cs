@@ -3,6 +3,7 @@ using AnotherOneConverter.WPF.ViewModel;
 using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls;
 using Microsoft.Practices.ServiceLocation;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -42,11 +43,11 @@ namespace AnotherOneConverter.WPF {
             MainViewModel.ActiveProject.OnSort(e.Column.SortMemberPath);
         }
 
-        private void OnActivated(object sender, System.EventArgs e) {
+        private void OnActivated(object sender, EventArgs e) {
             MainViewModel.IsActive = true;
         }
 
-        private void OnDeactivated(object sender, System.EventArgs e) {
+        private void OnDeactivated(object sender, EventArgs e) {
             MainViewModel.IsActive = false;
         }
     }

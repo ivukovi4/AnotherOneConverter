@@ -43,10 +43,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
 
             Documents.CollectionChanged += OnDocumentsChanged;
-        }
 
-        private void OnDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            IsDirty = true;
+            ActiveDocuments.CollectionChanged += OnActiveDocumentsCollectionChanged;
         }
 
         public MainViewModel MainViewModel { get; set; }
@@ -101,20 +99,17 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private DocumentViewModel _activeDocument;
-        public DocumentViewModel ActiveDocument {
+        private ObservableCollection<DocumentViewModel> _activeDocuments;
+        public ObservableCollection<DocumentViewModel> ActiveDocuments {
             get {
-                return _activeDocument;
+                return _activeDocuments ?? (_activeDocuments = new ObservableCollection<DocumentViewModel>());
             }
-            set {
-                if (Set(ref _activeDocument, value)) {
-                    RaisePropertyChanged(() => StatusInfo);
+        }
 
-                    DocumentUp.RaiseCanExecuteChanged();
-                    DocumentDown.RaiseCanExecuteChanged();
-                    DeleteDocument.RaiseCanExecuteChanged();
-                }
-            }
+        private void OnActiveDocumentsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            DocumentUpCommand.RaiseCanExecuteChanged();
+            DocumentDownCommand.RaiseCanExecuteChanged();
+            DeleteDocumentsCommand.RaiseCanExecuteChanged();
         }
 
         private string _fileName;
@@ -170,10 +165,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 var statusInfo = DisplayName;
 
                 if (Progress.HasValue) {
-                    statusInfo += string.Format(Properties.Resources.ConvertingFormat, Documents[Progress.Value].FileName);
+                    statusInfo += string.Format(Resources.ConvertingFormat, Documents[Progress.Value].FileName);
                 }
-                else if (ActiveDocument != null) {
-                    statusInfo += string.Format(", {0}", ActiveDocument.FileName);
+                else if (ActiveDocuments.Count > 0) {
+                    statusInfo += string.Format(", {0}", ActiveDocuments[0].FileName);
                 }
 
                 return statusInfo;
@@ -185,6 +180,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
             get {
                 return _documents ?? (_documents = new ObservableCollection<DocumentViewModel>());
             }
+        }
+
+        private void OnDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            IsDirty = true;
         }
 
         public void AddDocument(params string[] files) {
@@ -450,75 +449,112 @@ namespace AnotherOneConverter.WPF.ViewModel {
             ShowConversationSuccessMessage();
         }
 
-        private RelayCommand _documentUp;
-        public RelayCommand DocumentUp {
+        private RelayCommand _documentUpCommand;
+        public RelayCommand DocumentUpCommand {
             get {
-                return _documentUp ?? (_documentUp = new RelayCommand(OnDocumentUp,
-                    () => ActiveDocument != null && Documents.IndexOf(ActiveDocument) > 0));
+                return _documentUpCommand ?? (_documentUpCommand = new RelayCommand(OnDocumentUp, DocumentUpCommandCanExecute));
             }
+        }
+
+        private bool DocumentUpCommandCanExecute() {
+            if (ActiveDocuments.Count == 0)
+                return false;
+
+            foreach (var document in ActiveDocuments) {
+                if (Documents.IndexOf(document) == 0)
+                    return false;
+            }
+
+            return true;
         }
 
         private void OnDocumentUp() {
-            if (ActiveDocument == null)
+            if (ActiveDocuments.Count == 0)
                 return;
 
-            var activeDocument = ActiveDocument;
-            var index = Documents.IndexOf(activeDocument);
-            if (index == 0)
-                return;
+            foreach (var document in ActiveDocuments.OrderBy(d => d, new SameAsComparer<DocumentViewModel>(Documents))) {
+                var i = Documents.IndexOf(document);
+                if (i == 0)
+                    break;
 
-            Documents.RemoveAt(index);
-            Documents.Insert(index - 1, activeDocument);
-            ActiveDocument = activeDocument;
+                Documents.RemoveAt(i);
+                Documents.Insert(i - 1, document);
+
+                ActiveDocuments.Add(document);
+            }
 
             FileNameSortDirection = null;
             LastWriteTimeSortDirection = null;
         }
 
-        private RelayCommand _documentDown;
-        public RelayCommand DocumentDown {
+        private RelayCommand _documentDownCommand;
+        public RelayCommand DocumentDownCommand {
             get {
-                return _documentDown ?? (_documentDown = new RelayCommand(OnDocumentDown,
-                    () => ActiveDocument != null && Documents.IndexOf(ActiveDocument) < Documents.Count - 1));
+                return _documentDownCommand ?? (_documentDownCommand = new RelayCommand(OnDocumentDown, DocumentDownCommandCanExecute));
             }
+        }
+
+        private bool DocumentDownCommandCanExecute() {
+            if (ActiveDocuments.Count == 0)
+                return false;
+
+            foreach (var document in ActiveDocuments) {
+                if (Documents.IndexOf(document) == Documents.Count - 1)
+                    return false;
+            }
+
+            return true;
         }
 
         private void OnDocumentDown() {
-            if (ActiveDocument == null)
+            if (ActiveDocuments.Count == 0)
                 return;
 
-            var activeDocument = ActiveDocument;
-            var index = Documents.IndexOf(activeDocument);
-            if (index == Documents.Count - 1)
-                return;
+            foreach (var document in ActiveDocuments.OrderByDescending(d => d, new SameAsComparer<DocumentViewModel>(Documents))) {
+                var i = Documents.IndexOf(document);
+                if (i == Documents.Count - 1)
+                    return;
 
-            Documents.RemoveAt(index);
-            Documents.Insert(index + 1, activeDocument);
-            ActiveDocument = activeDocument;
+                Documents.RemoveAt(i);
+                Documents.Insert(i + 1, document);
+
+                ActiveDocuments.Add(document);
+            }
 
             FileNameSortDirection = null;
             LastWriteTimeSortDirection = null;
         }
 
-        private RelayCommand _deleteDocument;
-        public RelayCommand DeleteDocument {
+        private RelayCommand _deleteDocumentsCommand;
+        public RelayCommand DeleteDocumentsCommand {
             get {
-                return _deleteDocument ?? (_deleteDocument = new RelayCommand(OnDeleteDocument, () => ActiveDocument != null));
+                return _deleteDocumentsCommand ?? (_deleteDocumentsCommand = new RelayCommand(OnDeleteDocuments, DeleteDocumentsCommandCanExecute));
             }
         }
 
-        private void OnDeleteDocument() {
-            if (ActiveDocument == null)
+        private bool DeleteDocumentsCommandCanExecute() {
+            return ActiveDocuments.Count > 0;
+        }
+
+        private void OnDeleteDocuments() {
+            if (ActiveDocuments.Count == 0)
                 return;
 
-            var index = Documents.IndexOf(ActiveDocument);
-            Documents.RemoveAt(index);
-
-            if (Documents.Count > index) {
-                ActiveDocument = Documents[index];
+            DocumentViewModel last = null;
+            var lastIndex = Documents.IndexOf(ActiveDocuments.Last());
+            if (lastIndex + 1 < Documents.Count) {
+                last = Documents[lastIndex + 1];
             }
-            else {
-                ActiveDocument = Documents.LastOrDefault();
+
+            for (int i = ActiveDocuments.Count - 1; i >= 0; i--) {
+                Documents.Remove(ActiveDocuments[i]);
+            }
+
+            if (last != null) {
+                ActiveDocuments.Add(last);
+            }
+            else if (Documents.Count > 0) {
+                ActiveDocuments.Add(Documents.Last());
             }
         }
 
