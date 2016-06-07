@@ -127,6 +127,7 @@
                 <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectHeader}" Command="{Binding ActiveProject.Save}"></MenuItem>
                 <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectAsHeader}" Command="{Binding ActiveProject.SaveAs}"></MenuItem>
                 <MenuItem Header="{x:Static p:Resources.MenuItemCloseProjectHeader}" Command="{Binding ActiveProject.Close}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemSettingsHeader}"></MenuItem>
             </MenuItem>
         </Menu>
 

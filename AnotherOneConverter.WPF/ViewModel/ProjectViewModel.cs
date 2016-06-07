@@ -16,12 +16,15 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AnotherOneConverter.WPF.ViewModel {
-    public class ProjectViewModel : ViewModelBase {
+    public class ProjectViewModel : ViewModelBase, IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ProjectViewModel));
+
+        private const string DefaultName = "Untitled";
 
         private static int NameCounter = 1;
 
@@ -50,6 +53,13 @@ namespace AnotherOneConverter.WPF.ViewModel {
         public MainViewModel MainViewModel { get; set; }
 
         public Guid Id { get; set; } = Guid.NewGuid();
+
+        private List<FileSystemWatcher> _watchers;
+        public List<FileSystemWatcher> Watchers {
+            get {
+                return _watchers ?? (_watchers = new List<FileSystemWatcher>());
+            }
+        }
 
         public ProjectSettings Settings {
             get {
@@ -87,7 +97,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private string _displayName = string.Format("Untitled {0}", NameCounter++);
+        private string _displayName = string.Format("{0} {1}", DefaultName, NameCounter++);
         public string DisplayName {
             get {
                 return _displayName;
@@ -113,6 +123,9 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private string _fileName;
+        /// <summary>
+        /// Project file name
+        /// </summary>
         public string FileName {
             get {
                 return _fileName;
@@ -120,6 +133,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             set {
                 if (Set(ref _fileName, value)) {
                     IsDirty = true;
+
                     DisplayName = Path.GetFileNameWithoutExtension(FileName);
                 }
             }
@@ -188,11 +202,56 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         public void AddDocument(params string[] files) {
             for (int i = 0; i < files.Length; i++) {
-                var document = _documentFactory.Create(files[i]);
-                if (document != null) {
-                    Documents.Add(document);
-                }
+                AddDocument(files[i]);
             }
+        }
+
+        private void AddDocument(string filePath) {
+            var document = _documentFactory.Create(filePath);
+            if (document == null)
+                return;
+
+            if (Watchers.Exists(w => string.Equals(w.Path, document.FileInfo.Directory.FullName, StringComparison.InvariantCultureIgnoreCase)) == false) {
+                var watcher = new FileSystemWatcher(document.FileInfo.Directory.FullName);
+                watcher.Renamed += OnDocumentRenamed;
+                watcher.Changed += OnDocumentChanged;
+                watcher.Deleted += OnDocumentDeleted;
+                watcher.EnableRaisingEvents = true;
+
+                Watchers.Add(watcher);
+            }
+
+            if (Documents.Count == 0 && string.IsNullOrEmpty(FileName)) {
+                DisplayName = document.FileInfo.Directory.Name;
+            }
+
+            Documents.Add(document);
+        }
+
+        private async void OnDocumentDeleted(object sender, FileSystemEventArgs e) {
+            Log.DebugFormat("OnDocumentDeleted: {0}", e.FullPath);
+
+            var document = Documents.FirstOrDefault(d => string.Equals(d.FullPath, e.FullPath, StringComparison.InvariantCultureIgnoreCase));
+            if (document == null)
+                return;
+
+            await DispatcherHelper.RunAsync(() => Documents.Remove(document));
+        }
+
+        private async void OnDocumentRenamed(object sender, RenamedEventArgs e) {
+            Log.DebugFormat("OnDocumentRenamed: {0}, {1}", e.OldFullPath, e.FullPath);
+
+            var document = Documents.FirstOrDefault(d => string.Equals(d.FullPath, e.OldFullPath, StringComparison.InvariantCultureIgnoreCase));
+            if (document == null)
+                return;
+
+            document.FullPath = e.FullPath;
+
+            await DispatcherHelper.RunAsync(() => EnsureSorting());
+        }
+
+        private void OnDocumentChanged(object sender, FileSystemEventArgs e) {
+            Log.DebugFormat("OnDocumentChanged: {0}, {1}", e.ChangeType, e.FullPath);
         }
 
         private RelayCommand<string> _openDocuments;
@@ -600,21 +659,50 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
             directionProperty.SetValue(this, currentDirection);
 
+            SortBy(targetProperty, currentDirection.Value);
+        }
+
+        private void SortBy(string propertyName, ListSortDirection direction) {
+            var property = typeof(DocumentViewModel).GetProperty(propertyName);
+            if (property == null)
+                throw new ArgumentException("propertyName");
+
+            SortBy(property, direction);
+        }
+
+        private void SortBy(PropertyInfo property, ListSortDirection direction) {
             IList<DocumentViewModel> orderedCollection;
-            if (targetProperty.PropertyType == typeof(string)) {
-                orderedCollection = Documents.OrderBy(d => (string)targetProperty.GetValue(d), new SmartStringComparer(currentDirection.Value)).ToList();
+            if (property.PropertyType == typeof(string)) {
+                orderedCollection = Documents.OrderBy(d => (string)property.GetValue(d), new SmartStringComparer(direction)).ToList();
             }
-            else if (currentDirection == ListSortDirection.Ascending) {
-                orderedCollection = Documents.OrderBy(d => targetProperty.GetValue(d)).ToList();
+            else if (direction == ListSortDirection.Ascending) {
+                orderedCollection = Documents.OrderBy(d => property.GetValue(d)).ToList();
             }
             else {
-                orderedCollection = Documents.OrderByDescending(d => targetProperty.GetValue(d)).ToList();
+                orderedCollection = Documents.OrderByDescending(d => property.GetValue(d)).ToList();
             }
 
             Documents.Clear();
             foreach (var document in orderedCollection) {
                 Documents.Add(document);
             }
+        }
+
+        private void EnsureSorting() {
+            if (FileNameSortDirection.HasValue) {
+                SortBy(nameof(DocumentViewModel.FileName), FileNameSortDirection.Value);
+            }
+            else if (LastWriteTimeSortDirection.HasValue) {
+                SortBy(nameof(DocumentViewModel.LastWriteTime), LastWriteTimeSortDirection.Value);
+            }
+        }
+
+        public void Dispose() {
+            foreach (var watcher in Watchers) {
+                watcher.Dispose();
+            }
+
+            Watchers.Clear();
         }
     }
 }

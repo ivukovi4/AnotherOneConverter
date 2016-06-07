@@ -14,7 +14,7 @@ namespace AnotherOneConverter.WPF.Settings {
             PdfExportPath = project.PdfExportPath;
             FileNameSortDirection = project.FileNameSortDirection;
             LastWriteTimeSortDirection = project.LastWriteTimeSortDirection;
-            Documents = project.Documents.Select(d => d.FilePath).ToList();
+            Documents = project.Documents.Select(d => d.FullPath).ToList();
         }
 
         public Guid Id { get; set; }

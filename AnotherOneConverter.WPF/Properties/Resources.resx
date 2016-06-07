@@ -223,6 +223,9 @@
   <data name="MenuItemSaveProjectHeader" xml:space="preserve">
     <value>Save Project</value>
   </data>
+  <data name="MenuItemSettingsHeader" xml:space="preserve">
+    <value>Settings</value>
+  </data>
   <data name="PopupBoxExportTooltip" xml:space="preserve">
     <value>Export</value>
   </data>

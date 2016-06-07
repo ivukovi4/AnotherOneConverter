@@ -14,7 +14,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        public override bool IsSupported {
+        public override bool Supported {
             get {
                 return true;
             }

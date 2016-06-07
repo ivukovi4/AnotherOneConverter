@@ -15,9 +15,9 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         public DocumentViewModel Create(string filePath) {
             foreach (var instance in ServiceLocator.Current.GetAllInstances<DocumentViewModel>()) {
-                instance.FilePath = filePath;
+                instance.FullPath = filePath;
 
-                if (instance.IsSupported)
+                if (instance.Supported)
                     return instance;
             }
 

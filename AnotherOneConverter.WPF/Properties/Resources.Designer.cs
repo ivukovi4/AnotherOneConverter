@@ -377,6 +377,15 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string MenuItemSettingsHeader {
+            get {
+                return ResourceManager.GetString("MenuItemSettingsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export.
         /// </summary>
         public static string PopupBoxExportTooltip {
