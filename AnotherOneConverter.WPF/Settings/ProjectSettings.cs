@@ -15,6 +15,9 @@ namespace AnotherOneConverter.WPF.Settings {
             FileNameSortDirection = project.FileNameSortDirection;
             LastWriteTimeSortDirection = project.LastWriteTimeSortDirection;
             Documents = project.Documents.Select(d => d.FullPath).ToList();
+            AutoAddWord = project.AutoAddWord;
+            AutoAddExcel = project.AutoAddExcel;
+            AutoAddPdf = project.AutoAddPdf;
         }
 
         public Guid Id { get; set; }
@@ -28,5 +31,11 @@ namespace AnotherOneConverter.WPF.Settings {
         public ListSortDirection? LastWriteTimeSortDirection { get; set; }
 
         public IList<string> Documents { get; set; }
+
+        public bool AutoAddWord { get; set; }
+
+        public bool AutoAddExcel { get; set; }
+
+        public bool AutoAddPdf { get; set; }
     }
 }

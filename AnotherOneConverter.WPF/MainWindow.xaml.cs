@@ -50,5 +50,9 @@ namespace AnotherOneConverter.WPF {
         private void OnDeactivated(object sender, EventArgs e) {
             MainViewModel.IsActive = false;
         }
+
+        private void OnSettingsClick(object sender, RoutedEventArgs e) {
+            ProjectSettingsFlyout.IsOpen = true;
+        }
     }
 }

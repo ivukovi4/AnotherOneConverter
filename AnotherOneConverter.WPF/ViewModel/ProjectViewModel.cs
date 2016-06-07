@@ -74,13 +74,50 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 PdfExportPath = value.PdfExportPath;
                 FileNameSortDirection = value.FileNameSortDirection;
                 LastWriteTimeSortDirection = value.LastWriteTimeSortDirection;
+                AutoAddWord = value.AutoAddWord;
+                AutoAddExcel = value.AutoAddExcel;
+                AutoAddPdf = value.AutoAddPdf;
 
-                foreach (var filePath in value.Documents) {
-                    AddDocument(filePath);
-                }
+                AddDocument(value.Documents.ToArray());
 
                 if (value is ProjectSettingsExt) {
                     IsDirty = ((ProjectSettingsExt)value).IsDirty;
+                }
+            }
+        }
+
+        private bool _autoAddWord;
+        public bool AutoAddWord {
+            get {
+                return _autoAddWord;
+            }
+            set {
+                if (Set(ref _autoAddWord, value)) {
+                    IsDirty = true;
+                }
+            }
+        }
+
+        private bool _autoAddExcel;
+        public bool AutoAddExcel {
+            get {
+                return _autoAddExcel;
+            }
+            set {
+                if (Set(ref _autoAddExcel, value)) {
+                    IsDirty = true;
+                }
+            }
+        }
+
+        private bool _autoAddPdf;
+        public bool AutoAddPdf {
+            get {
+                return _autoAddPdf;
+            }
+            set {
+                if (Set(ref _autoAddPdf, value)) {
+                    IsDirty = true;
                 }
             }
         }
@@ -204,9 +241,11 @@ namespace AnotherOneConverter.WPF.ViewModel {
             for (int i = 0; i < files.Length; i++) {
                 AddDocument(files[i]);
             }
+
+            EnsureSorting();
         }
 
-        private void AddDocument(string filePath) {
+        private void AddDocument(string filePath, bool ensureSorting = false) {
             var document = _documentFactory.Create(filePath);
             if (document == null)
                 return;
@@ -215,6 +254,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 var watcher = new FileSystemWatcher(document.FileInfo.Directory.FullName);
                 watcher.Renamed += OnDocumentRenamed;
                 watcher.Changed += OnDocumentChanged;
+                watcher.Created += OnDocumentCreated;
                 watcher.Deleted += OnDocumentDeleted;
                 watcher.EnableRaisingEvents = true;
 
@@ -226,6 +266,20 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
 
             Documents.Add(document);
+
+            if (ensureSorting) {
+                EnsureSorting();
+            }
+        }
+
+        private async void OnDocumentCreated(object sender, FileSystemEventArgs e) {
+            Log.DebugFormat("OnDocumentCreated: {0}", e.FullPath);
+
+            if (AutoAddWord && _documentFactory.IsWord(e.FullPath) ||
+                AutoAddExcel && _documentFactory.IsExcel(e.FullPath) ||
+                AutoAddPdf && _documentFactory.IsPdf(e.FullPath)) {
+                await DispatcherHelper.RunAsync(() => AddDocument(e.FullPath, true));
+            }
         }
 
         private async void OnDocumentDeleted(object sender, FileSystemEventArgs e) {
@@ -251,7 +305,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private void OnDocumentChanged(object sender, FileSystemEventArgs e) {
-            Log.DebugFormat("OnDocumentChanged: {0}, {1}", e.ChangeType, e.FullPath);
+            Log.DebugFormat("OnDocumentChanged: {0}", e.FullPath);
         }
 
         private RelayCommand<string> _openDocuments;

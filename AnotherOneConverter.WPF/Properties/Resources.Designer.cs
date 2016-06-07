@@ -402,5 +402,23 @@ namespace AnotherOneConverter.WPF.Properties {
                 return ResourceManager.GetString("PopupBoxOpenTooltip", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically add files:.
+        /// </summary>
+        public static string ProjectSettingsAutoAddFilesTitle {
+            get {
+                return ResourceManager.GetString("ProjectSettingsAutoAddFilesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Settings.
+        /// </summary>
+        public static string ProjectSettingsFlyoutHeader {
+            get {
+                return ResourceManager.GetString("ProjectSettingsFlyoutHeader", resourceCulture);
+            }
+        }
     }
 }
