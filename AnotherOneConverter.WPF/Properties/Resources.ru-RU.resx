@@ -219,10 +219,19 @@
   <data name="MenuItemSaveProjectHeader" xml:space="preserve">
     <value>Сохранить Проект</value>
   </data>
+  <data name="MenuItemSettingsHeader" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
   <data name="PopupBoxExportTooltip" xml:space="preserve">
     <value>Экспорт</value>
   </data>
   <data name="PopupBoxOpenTooltip" xml:space="preserve">
     <value>Открыть Файл...</value>
+  </data>
+  <data name="ProjectSettingsAutoAddFilesTitle" xml:space="preserve">
+    <value>Автоматически добавлять файлы:</value>
+  </data>
+  <data name="ProjectSettingsFlyoutHeader" xml:space="preserve">
+    <value>Настройки проекта</value>
   </data>
 </root>

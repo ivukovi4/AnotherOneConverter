@@ -12,21 +12,44 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         public abstract string ConvertToPdf(string targetDirectory);
 
-        protected FileInfo FileInfo { get; private set; }
+        public FileInfo FileInfo { get; private set; }
 
-        private string _filePath;
-        public string FilePath {
+        public void Invalidate() {
+            Invalidate(false);
+        }
+
+        private void Invalidate(bool force) {
+            if (force || FileInfo == null) {
+                FileInfo = new FileInfo(_fullPath);
+            }
+            else {
+                FileInfo.Refresh();
+            }
+
+            RaisePropertyChanged(() => Supported);
+            RaisePropertyChanged(() => LastWriteTime);
+            RaisePropertyChanged(() => FileName);
+        }
+
+        private string _fullPath;
+        public string FullPath {
             get {
-                return _filePath;
+                return _fullPath;
             }
             set {
-                if (Set(ref _filePath, value)) {
-                    FileInfo = new FileInfo(_filePath);
+                if (Set(ref _fullPath, value)) {
+                    Invalidate(true);
                 }
             }
         }
 
-        public virtual bool IsSupported {
+        public virtual bool Exists {
+            get {
+                return FileInfo.Exists;
+            }
+        }
+
+        public virtual bool Supported {
             get {
                 return SupportedExtensions.Contains(FileInfo.Extension.ToLower());
             }

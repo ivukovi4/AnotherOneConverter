@@ -127,6 +127,7 @@
                 <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectHeader}" Command="{Binding ActiveProject.Save}"></MenuItem>
                 <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectAsHeader}" Command="{Binding ActiveProject.SaveAs}"></MenuItem>
                 <MenuItem Header="{x:Static p:Resources.MenuItemCloseProjectHeader}" Command="{Binding ActiveProject.Close}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemSettingsHeader}" Click="OnSettingsClick"></MenuItem>
             </MenuItem>
         </Menu>
 
@@ -256,5 +257,37 @@
             <StatusBarItem Content="{Binding ActiveProject.StatusInfo}"></StatusBarItem>
         </StatusBar>
     </Grid>
+
+    <MahApps:MetroWindow.Flyouts>
+        <MahApps:FlyoutsControl>
+            <MahApps:Flyout
+                x:Name="ProjectSettingsFlyout"
+                Header="{x:Static p:Resources.ProjectSettingsFlyoutHeader}"
+                Position="Right" AnimateOpacity="True" IsModal="True">
+                <Border MinWidth="400" Padding="20" DataContext="{Binding ActiveProject}">
+                    <StackPanel>
+                        <TextBlock
+                            Style="{StaticResource MaterialDesignTitleTextBlock}"
+                            Text="{x:Static p:Resources.ProjectSettingsAutoAddFilesTitle}"></TextBlock>
+                        
+                        <CheckBox
+                            Margin="0,12,0,0"
+                            IsChecked="{Binding AutoAddWord}"
+                            Style="{StaticResource MaterialDesignCheckBox}">Word (*.doc, *.docx)</CheckBox>
+
+                        <CheckBox
+                            Margin="0,6,0,0"
+                            IsChecked="{Binding AutoAddExcel}"
+                            Style="{StaticResource MaterialDesignCheckBox}">Excel (*.xls, *.xlsx)</CheckBox>
+
+                        <CheckBox
+                            Margin="0,6,0,0"
+                            IsChecked="{Binding AutoAddPdf}"
+                            Style="{StaticResource MaterialDesignCheckBox}">Pdf (*.pdf)</CheckBox>
+                    </StackPanel>
+                </Border>
+            </MahApps:Flyout>
+        </MahApps:FlyoutsControl>
+    </MahApps:MetroWindow.Flyouts>
 
 </MahApps:MetroWindow>

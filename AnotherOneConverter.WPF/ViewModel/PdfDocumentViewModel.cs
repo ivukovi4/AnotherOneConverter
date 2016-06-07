@@ -9,7 +9,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         public override string ConvertToPdf(string targetDirectory) {
-            return FilePath;
+            return FullPath;
         }
     }
 }

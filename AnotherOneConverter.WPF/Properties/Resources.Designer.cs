@@ -377,6 +377,15 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string MenuItemSettingsHeader {
+            get {
+                return ResourceManager.GetString("MenuItemSettingsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export.
         /// </summary>
         public static string PopupBoxExportTooltip {
@@ -391,6 +400,24 @@ namespace AnotherOneConverter.WPF.Properties {
         public static string PopupBoxOpenTooltip {
             get {
                 return ResourceManager.GetString("PopupBoxOpenTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically add files:.
+        /// </summary>
+        public static string ProjectSettingsAutoAddFilesTitle {
+            get {
+                return ResourceManager.GetString("ProjectSettingsAutoAddFilesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Settings.
+        /// </summary>
+        public static string ProjectSettingsFlyoutHeader {
+            get {
+                return ResourceManager.GetString("ProjectSettingsFlyoutHeader", resourceCulture);
             }
         }
     }
