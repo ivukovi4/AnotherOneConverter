@@ -238,4 +238,7 @@
   <data name="ProjectSettingsSyncFilesTitle" xml:space="preserve">
     <value>Sync folders</value>
   </data>
+  <data name="SyncDocumentsTooltip" xml:space="preserve">
+    <value>Sync</value>
+  </data>
 </root>

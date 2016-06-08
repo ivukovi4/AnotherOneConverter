@@ -66,6 +66,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
         private void OnDirectoriesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             IsDirty = true;
 
+            SyncCommand.RaiseCanExecuteChanged();
+
             if (e.OldItems != null) {
                 foreach (DirectoryViewModel directory in e.OldItems) {
                     directory.Project = null;
@@ -270,42 +272,6 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 EnsureSorting();
             }
         }
-
-        /*private async void OnDocumentCreated(object sender, FileSystemEventArgs e) {
-            Log.DebugFormat("OnDocumentCreated: {0}", e.FullPath);
-
-            if (AutoAddWord && _documentFactory.IsWord(e.FullPath) ||
-                AutoAddExcel && _documentFactory.IsExcel(e.FullPath) ||
-                AutoAddPdf && _documentFactory.IsPdf(e.FullPath)) {
-                await DispatcherHelper.RunAsync(() => AddDocument(e.FullPath, true));
-            }
-        }
-
-        private async void OnDocumentDeleted(object sender, FileSystemEventArgs e) {
-            Log.DebugFormat("OnDocumentDeleted: {0}", e.FullPath);
-
-            var document = Documents.FirstOrDefault(d => string.Equals(d.FullPath, e.FullPath, StringComparison.InvariantCultureIgnoreCase));
-            if (document == null)
-                return;
-
-            await DispatcherHelper.RunAsync(() => Documents.Remove(document));
-        }
-
-        private async void OnDocumentRenamed(object sender, RenamedEventArgs e) {
-            Log.DebugFormat("OnDocumentRenamed: {0}, {1}", e.OldFullPath, e.FullPath);
-
-            var document = Documents.FirstOrDefault(d => string.Equals(d.FullPath, e.OldFullPath, StringComparison.InvariantCultureIgnoreCase));
-            if (document == null)
-                return;
-
-            document.FullPath = e.FullPath;
-
-            await DispatcherHelper.RunAsync(() => EnsureSorting());
-        }
-
-        private void OnDocumentChanged(object sender, FileSystemEventArgs e) {
-            Log.DebugFormat("OnDocumentChanged: {0}", e.FullPath);
-        }*/
 
         private RelayCommand<string> _openDocuments;
         [JsonIgnore]
@@ -767,9 +733,28 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        public void Sync() {
+        private RelayCommand _syncCommand;
+        public RelayCommand SyncCommand {
+            get {
+                return _syncCommand ?? (_syncCommand = new RelayCommand(OnSync, SyncCommandCanExcecute));
+            }
+        }
+
+        private bool SyncCommandCanExcecute() {
+            return Directories.Count > 0;
+        }
+
+        private void OnSync() {
             foreach (var directory in Directories) {
                 directory.Sync();
+            }
+
+            var files = Directories.SelectMany(d => d.DirectoryInfo.EnumerateFiles()).ToList();
+
+            for (int i = Documents.Count - 1; i >= 0; i--) {
+                if (files.Any(f => string.Equals(f.FullName, Documents[i].FullPath, StringComparison.InvariantCultureIgnoreCase)) == false) {
+                    DispatcherHelper.CheckBeginInvokeOnUI(() => Documents.RemoveAt(i));
+                }
             }
         }
 

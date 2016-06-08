@@ -420,5 +420,14 @@ namespace AnotherOneConverter.WPF.Properties {
                 return ResourceManager.GetString("ProjectSettingsSyncFilesTitle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync.
+        /// </summary>
+        public static string SyncDocumentsTooltip {
+            get {
+                return ResourceManager.GetString("SyncDocumentsTooltip", resourceCulture);
+            }
+        }
     }
 }

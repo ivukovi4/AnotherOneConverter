@@ -234,4 +234,7 @@
   <data name="ProjectSettingsSyncFilesTitle" xml:space="preserve">
     <value>Синхронизация файлов в папках</value>
   </data>
+  <data name="SyncDocumentsTooltip" xml:space="preserve">
+    <value>Синхронизировать</value>
+  </data>
 </root>

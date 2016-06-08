@@ -183,6 +183,15 @@
             HorizontalAlignment="Right">
 
             <Button
+                ToolTip="{x:Static p:Resources.SyncDocumentsTooltip}"
+                Margin="0,0,12,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ActiveProject.SyncCommand}"
+                Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
+                <Material:PackIcon Kind="Sync" Height="24" Width="24" />
+            </Button>
+            
+            <Button
                 ToolTip="{x:Static p:Resources.ButtonUpTooltip}"
                 Margin="0,0,12,0"
                 HorizontalAlignment="Left"

@@ -67,7 +67,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private bool _syncWord;
+        private bool _syncWord = true;
         public bool SyncWord {
             get {
                 return _syncWord;
@@ -77,7 +77,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private bool _syncExcel;
+        private bool _syncExcel = true;
         public bool SyncExcel {
             get {
                 return _syncExcel;
@@ -114,8 +114,9 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         public void Sync() {
-            if (Project == null || DirectoryInfo == null)
+            if (Project == null || DirectoryInfo == null) {
                 return;
+            }
 
             foreach (var fileInfo in DirectoryInfo.EnumerateFiles()) {
                 if (Project.Documents.Any(d => string.Equals(d.FullPath, fileInfo.FullName, StringComparison.InvariantCultureIgnoreCase))) {

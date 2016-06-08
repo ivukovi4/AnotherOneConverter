@@ -86,11 +86,6 @@ namespace AnotherOneConverter.WPF.ViewModel {
             _silent = true;
             try {
                 JsonConvert.PopulateObject(Settings.Default.MainViewModel, this, _jsonSettings);
-
-                foreach (var project in Projects) {
-                    project.Sync();
-                }
-
                 return true;
             }
             catch {
@@ -192,7 +187,6 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 using (var jsonReader = new JsonTextReader(streamReader)) {
                     var project = jsonSerializer.Deserialize<ProjectViewModel>(jsonReader);
                     project.FileName = openFileDialog.FileName;
-                    project.Sync();
 
                     AddProject(project, replaceExisting: true, isActive: true);
 
