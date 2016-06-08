@@ -14,6 +14,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
             throw new NotImplementedException();
         }
 
+        public bool IsSupported(string filePath) {
+            throw new NotImplementedException();
+        }
+
         public bool IsWord(string filePath) {
             throw new NotImplementedException();
         }

@@ -1,4 +1,5 @@
-﻿using AnotherOneConverter.WPF.Settings;
+﻿using AnotherOneConverter.WPF.Core;
+using AnotherOneConverter.WPF.Properties;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using log4net;
@@ -30,31 +31,29 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         private readonly IDialogCoordinator _dialogCoordinator;
 
+        private readonly JsonSerializerSettings _jsonSettings;
+
+        private bool _silent = false;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel(IDialogCoordinator dialogCoordinator) {
             _dialogCoordinator = dialogCoordinator;
+            _jsonSettings = new JsonSerializerSettings();
+            _jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+            _jsonSettings.ContractResolver = new NinjectContractResolver();
+            _jsonSettings.Converters.Add(new DocumentJsonConverter());
+
+            PropertyChanged += OnMainPropertyChanged;
+
+            Projects.CollectionChanged += OnProjectsCollectionChanged;
 
             if (IsInDesignMode) {
                 AddProject();
                 AddProject();
                 AddProject();
             }
-            else if (string.IsNullOrEmpty(Properties.Settings.Default.MainViewModel)) {
-                AddProject();
-            }
-            else {
-                RestoreFromSettings();
-            }
-
-            foreach (var project in Projects) {
-                project.PropertyChanged += OnProjectPropertyChanged;
-            }
-
-            Projects.CollectionChanged += OnProjectsCollectionChanged;
-
-            PropertyChanged += OnMainPropertyChanged;
         }
 
         private void OnProjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -66,49 +65,55 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
             if (e.NewItems != null) {
                 foreach (ProjectViewModel project in e.NewItems) {
+                    project.MainViewModel = this;
                     project.PropertyChanged -= OnProjectPropertyChanged;
                     project.PropertyChanged += OnProjectPropertyChanged;
                 }
             }
 
-            StoreSettings();
+            Store();
         }
 
         private void OnProjectPropertyChanged(object sender, PropertyChangedEventArgs e) {
-            StoreSettings();
+            Store();
         }
 
         private void OnMainPropertyChanged(object sender, PropertyChangedEventArgs e) {
-            StoreSettings();
+            Store();
         }
 
-        private void RestoreFromSettings() {
-            Settings = JsonConvert.DeserializeObject<MainSettings>(Properties.Settings.Default.MainViewModel);
+        private bool Restore() {
+            _silent = true;
+            try {
+                JsonConvert.PopulateObject(Settings.Default.MainViewModel, this, _jsonSettings);
+
+                foreach (var project in Projects) {
+                    project.Sync();
+                }
+
+                return true;
+            }
+            catch {
+                return false;
+            }
+            finally {
+                _silent = false;
+            }
         }
 
-        private void StoreSettings() {
-            Properties.Settings.Default.MainViewModel = JsonConvert.SerializeObject(Settings);
-            Properties.Settings.Default.Save();
+        private void Store() {
+            if (_silent)
+                return;
+
+            Settings.Default.MainViewModel = JsonConvert.SerializeObject(this, _jsonSettings);
+            Settings.Default.Save();
         }
 
+        [JsonIgnore]
         public bool IsActive { get; set; }
 
-        public MainSettings Settings {
-            get {
-                return new MainSettings(this);
-            }
-            set {
-                foreach (var projectSettings in value.Projects) {
-                    AddProject(projectSettings);
-                }
-
-                if (value.ActiveProjectId.HasValue) {
-                    ActiveProject = Projects.FirstOrDefault(p => p.Id == value.ActiveProjectId.Value);
-                }
-            }
-        }
-
         private ProjectViewModel _activeProject;
+        [JsonProperty(Order = 2000)]
         public ProjectViewModel ActiveProject {
             get {
                 return _activeProject;
@@ -119,27 +124,43 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private ObservableCollection<ProjectViewModel> _projects;
+        [JsonProperty(Order = 1000)]
         public ObservableCollection<ProjectViewModel> Projects {
             get {
                 return _projects ?? (_projects = new ObservableCollection<ProjectViewModel>());
             }
         }
 
-        private RelayCommand _closing;
-        public RelayCommand Closing {
+        private RelayCommand _loadedCommand;
+        [JsonIgnore]
+        public RelayCommand LoadedCommand {
             get {
-                return _closing ?? (_closing = new RelayCommand(OnClosing));
+                return _loadedCommand ?? (_loadedCommand = new RelayCommand(OnLoaded));
+            }
+        }
+
+        private void OnLoaded() {
+            if (Restore() == false)
+                AddProject();
+        }
+
+        private RelayCommand _closingCommand;
+        [JsonIgnore]
+        public RelayCommand ClosingCommand {
+            get {
+                return _closingCommand ?? (_closingCommand = new RelayCommand(OnClosing));
             }
         }
 
         private void OnClosing() {
-            StoreSettings();
+            Store();
         }
 
-        private RelayCommand _createProject;
-        public RelayCommand CreateProject {
+        private RelayCommand _createProjectCommand;
+        [JsonIgnore]
+        public RelayCommand CreateProjectCommand {
             get {
-                return _createProject ?? (_createProject = new RelayCommand(OnCreateProject));
+                return _createProjectCommand ?? (_createProjectCommand = new RelayCommand(OnCreateProject));
             }
         }
 
@@ -147,10 +168,11 @@ namespace AnotherOneConverter.WPF.ViewModel {
             AddProject();
         }
 
-        private RelayCommand _openProject;
-        public RelayCommand OpenProject {
+        private RelayCommand _openProjectCommand;
+        [JsonIgnore]
+        public RelayCommand OpenProjectCommand {
             get {
-                return _openProject ?? (_openProject = new RelayCommand(OnOpenProject));
+                return _openProjectCommand ?? (_openProjectCommand = new RelayCommand(OnOpenProject));
             }
         }
 
@@ -160,18 +182,19 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 return;
 
             // project already opened
-            if (Projects.Select(p => p.FileName).Contains(openFileDialog.FileName))
+            if (Projects.Any(p => string.Equals(p.FileName, openFileDialog.FileName, StringComparison.InvariantCultureIgnoreCase)))
                 return;
 
             try {
-                var jsonSerializer = new JsonSerializer();
+                var jsonSerializer = JsonSerializer.Create(_jsonSettings);
                 using (var fileStream = File.OpenRead(openFileDialog.FileName))
                 using (var streamReader = new StreamReader(fileStream))
                 using (var jsonReader = new JsonTextReader(streamReader)) {
-                    var project = AddProject(jsonSerializer.Deserialize<ProjectSettings>(jsonReader),
-                        fileName: openFileDialog.FileName,
-                        replaceExisting: true,
-                        isActive: true);
+                    var project = jsonSerializer.Deserialize<ProjectViewModel>(jsonReader);
+                    project.FileName = openFileDialog.FileName;
+                    project.Sync();
+
+                    AddProject(project, replaceExisting: true, isActive: true);
 
                     project.IsDirty = false;
                 }
@@ -184,19 +207,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private ProjectViewModel AddProject(bool replaceExisting = false, bool isActive = false) {
-            var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
-            project.MainViewModel = this;
-
-            return AddProject(project, replaceExisting, isActive);
-        }
-
-        private ProjectViewModel AddProject(ProjectSettings projectSettings, string fileName = null, bool replaceExisting = false, bool isActive = false) {
-            var project = ServiceLocator.Current.GetInstance<ProjectViewModel>();
-            project.MainViewModel = this;
-            project.FileName = fileName;
-            project.Settings = projectSettings;
-
-            return AddProject(project, replaceExisting, isActive);
+            return AddProject(ServiceLocator.Current.GetInstance<ProjectViewModel>(), replaceExisting, isActive);
         }
 
         private ProjectViewModel AddProject(ProjectViewModel project, bool replaceExisting = false, bool isActive = false) {

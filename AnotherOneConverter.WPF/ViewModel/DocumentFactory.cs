@@ -1,22 +1,18 @@
 ﻿using Microsoft.Practices.ServiceLocation;
-using System.Collections.Generic;
-using System;
 using System.Linq;
 
 namespace AnotherOneConverter.WPF.ViewModel {
     public class DocumentFactory : IDocumentFactory {
-        public static IEnumerable<string> SupportedExtensions {
-            get {
-                foreach (var instance in ServiceLocator.Current.GetAllInstances<DocumentViewModel>()) {
-                    foreach (var extension in instance.SupportedExtensions) {
-                        yield return extension;
-                    }
-                }
-            }
+        private readonly IServiceLocator _serviceLocator;
+
+        public DocumentFactory() : this(ServiceLocator.Current) { }
+
+        public DocumentFactory(IServiceLocator serviceLocator) {
+            _serviceLocator = serviceLocator;
         }
 
         public DocumentViewModel Create(string filePath) {
-            foreach (var instance in ServiceLocator.Current.GetAllInstances<DocumentViewModel>()) {
+            foreach (var instance in _serviceLocator.GetAllInstances<DocumentViewModel>()) {
                 instance.FullPath = filePath;
 
                 if (instance.Supported)
@@ -27,9 +23,13 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private bool IsSupportedBy<T>(string filePath) where T : DocumentViewModel {
-            var instance = ServiceLocator.Current.GetAllInstances<DocumentViewModel>().OfType<T>().FirstOrDefault();
+            var instance = _serviceLocator.GetAllInstances<DocumentViewModel>().OfType<T>().FirstOrDefault();
             instance.FullPath = filePath;
             return instance.Supported;
+        }
+
+        public bool IsSupported(string filePath) {
+            return IsExcel(filePath) || IsWord(filePath) || IsPdf(filePath);
         }
 
         public bool IsExcel(string filePath) {

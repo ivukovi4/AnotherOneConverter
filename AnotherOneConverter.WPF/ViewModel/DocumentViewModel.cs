@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,10 +9,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
     public abstract class DocumentViewModel : ObservableObject {
         public DocumentViewModel() { }
 
+        [JsonIgnore]
         public abstract IEnumerable<string> SupportedExtensions { get; }
 
         public abstract string ConvertToPdf(string targetDirectory);
 
+        [JsonIgnore]
         public FileInfo FileInfo { get; private set; }
 
         public void Invalidate() {
@@ -43,24 +46,28 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
+        [JsonIgnore]
         public virtual bool Exists {
             get {
                 return FileInfo.Exists;
             }
         }
 
+        [JsonIgnore]
         public virtual bool Supported {
             get {
                 return SupportedExtensions.Contains(FileInfo.Extension.ToLower());
             }
         }
 
+        [JsonIgnore]
         public virtual string FileName {
             get {
                 return FileInfo.Name;
             }
         }
 
+        [JsonIgnore]
         public virtual DateTime LastWriteTime {
             get {
                 return FileInfo.LastWriteTime;

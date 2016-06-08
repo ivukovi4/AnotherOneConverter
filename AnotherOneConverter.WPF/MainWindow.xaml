@@ -23,11 +23,12 @@
     BorderThickness="1"
     Background="#fafafa"
     WindowTransitionsEnabled="False"
+    WindowStartupLocation="CenterScreen"
     Activated="OnActivated"
     Deactivated="OnDeactivated"
     MahAppsDialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
-    DataContext="{Binding Main, Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen">
+    DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -89,14 +90,48 @@
 
                 </DataGrid>
             </DataTemplate>
+
+            <DataTemplate x:Key="DirectorySettingsItemTemplate">
+                <StackPanel Margin="0,0,0,12">
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        Style="{StaticResource MaterialDesignSubheadingTextBlock}">
+                        <Run Text="{Binding DisplayName, Mode=OneWay}"></Run><Run Text=":"></Run>
+                    </TextBlock>
+                    
+                    <CheckBox
+                        Margin="0,0,0,6"
+                        IsChecked="{Binding SyncWord}"
+                        Style="{StaticResource MaterialDesignCheckBox}">Word (*.doc, *.docx)</CheckBox>
+
+                    <CheckBox
+                        Margin="0,0,0,6"
+                        IsChecked="{Binding SyncExcel}"
+                        Style="{StaticResource MaterialDesignCheckBox}">Excel (*.xls, *.xlsx)</CheckBox>
+
+                    <CheckBox
+                        IsChecked="{Binding SyncPdf}"
+                        Style="{StaticResource MaterialDesignCheckBox}">Pdf (*.pdf)</CheckBox>
+                </StackPanel>
+                
+            </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding Closing}"></i:InvokeCommandAction>
+            <i:InvokeCommandAction Command="{Binding ClosingCommand}"></i:InvokeCommandAction>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"></i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding CreateProjectCommand}"></KeyBinding>
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenProjectCommand}"></KeyBinding>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding ActiveProject.SaveCommand}"></KeyBinding>
+    </Window.InputBindings>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -121,12 +156,12 @@
                 <MenuItem Header="{x:Static p:Resources.MenuItemExitHeader}" Click="OnExitClick"></MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static p:Resources.MenuItemProjectHeader}">
-                <MenuItem Header="{x:Static p:Resources.MenuItemNewProjectHeader}" Command="{Binding CreateProject}"></MenuItem>
-                <MenuItem Header="{x:Static p:Resources.MenuItemOpenProjectHeader}" Command="{Binding OpenProject}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemNewProjectHeader}" Command="{Binding CreateProjectCommand}" InputGestureText="Ctrl+N"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemOpenProjectHeader}" Command="{Binding OpenProjectCommand}" InputGestureText="Ctrl+O"></MenuItem>
                 <Separator></Separator>
-                <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectHeader}" Command="{Binding ActiveProject.Save}"></MenuItem>
-                <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectAsHeader}" Command="{Binding ActiveProject.SaveAs}"></MenuItem>
-                <MenuItem Header="{x:Static p:Resources.MenuItemCloseProjectHeader}" Command="{Binding ActiveProject.Close}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectHeader}" Command="{Binding ActiveProject.SaveCommand}" InputGestureText="Ctrl+S"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemSaveProjectAsHeader}" Command="{Binding ActiveProject.SaveAsCommand}"></MenuItem>
+                <MenuItem Header="{x:Static p:Resources.MenuItemCloseProjectHeader}" Command="{Binding ActiveProject.CloseCommand}"></MenuItem>
                 <MenuItem Header="{x:Static p:Resources.MenuItemSettingsHeader}" Click="OnSettingsClick"></MenuItem>
             </MenuItem>
         </Menu>
@@ -264,28 +299,25 @@
                 x:Name="ProjectSettingsFlyout"
                 Header="{x:Static p:Resources.ProjectSettingsFlyoutHeader}"
                 Position="Right" AnimateOpacity="True" IsModal="True">
+
                 <Border MinWidth="400" Padding="20" DataContext="{Binding ActiveProject}">
                     <StackPanel>
                         <TextBlock
+                            Margin="0,0,0,12"
                             Style="{StaticResource MaterialDesignTitleTextBlock}"
-                            Text="{x:Static p:Resources.ProjectSettingsAutoAddFilesTitle}"></TextBlock>
+                            Text="Наименование проекта"></TextBlock>
+
+                        <TextBox Margin="0,0,0,12" Text="{Binding DisplayName}"></TextBox>
                         
-                        <CheckBox
-                            Margin="0,12,0,0"
-                            IsChecked="{Binding AutoAddWord}"
-                            Style="{StaticResource MaterialDesignCheckBox}">Word (*.doc, *.docx)</CheckBox>
+                        <TextBlock
+                            Margin="0,0,0,12"
+                            Style="{StaticResource MaterialDesignTitleTextBlock}"
+                            Text="{x:Static p:Resources.ProjectSettingsSyncFilesTitle}"></TextBlock>
 
-                        <CheckBox
-                            Margin="0,6,0,0"
-                            IsChecked="{Binding AutoAddExcel}"
-                            Style="{StaticResource MaterialDesignCheckBox}">Excel (*.xls, *.xlsx)</CheckBox>
-
-                        <CheckBox
-                            Margin="0,6,0,0"
-                            IsChecked="{Binding AutoAddPdf}"
-                            Style="{StaticResource MaterialDesignCheckBox}">Pdf (*.pdf)</CheckBox>
+                        <ItemsControl Focusable="False" ItemsSource="{Binding Directories}" ItemTemplate="{StaticResource DirectorySettingsItemTemplate}"></ItemsControl>
                     </StackPanel>
                 </Border>
+
             </MahApps:Flyout>
         </MahApps:FlyoutsControl>
     </MahApps:MetroWindow.Flyouts>

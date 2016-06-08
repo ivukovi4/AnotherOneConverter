@@ -228,10 +228,10 @@
   <data name="PopupBoxOpenTooltip" xml:space="preserve">
     <value>Открыть Файл...</value>
   </data>
-  <data name="ProjectSettingsAutoAddFilesTitle" xml:space="preserve">
-    <value>Автоматически добавлять файлы:</value>
-  </data>
   <data name="ProjectSettingsFlyoutHeader" xml:space="preserve">
     <value>Настройки проекта</value>
+  </data>
+  <data name="ProjectSettingsSyncFilesTitle" xml:space="preserve">
+    <value>Синхронизация файлов в папках</value>
   </data>
 </root>

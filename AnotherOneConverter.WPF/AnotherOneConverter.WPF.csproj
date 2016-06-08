@@ -160,7 +160,9 @@
     <Compile Include="Controls\MultiSelectBehavior.cs" />
     <Compile Include="Controls\ProgressBarExtension.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Core\DocumentJsonConverter.cs" />
     <Compile Include="Core\INotificationService.cs" />
+    <Compile Include="Core\NinjectContractResolver.cs" />
     <Compile Include="Core\SameAsComparer.cs" />
     <Compile Include="Core\WpfNotificationService.cs" />
     <Compile Include="Properties\Resources.ru-RU.Designer.cs">
@@ -168,10 +170,8 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Settings\MainSettings.cs" />
-    <Compile Include="Settings\ProjectSettings.cs" />
-    <Compile Include="Settings\ProjectSettingsExt.cs" />
     <Compile Include="Core\SmartStringComparer.cs" />
+    <Compile Include="ViewModel\DirectoryViewModel.cs" />
     <Compile Include="ViewModel\DocumentFactory.cs" />
     <Compile Include="ViewModel\DocumentViewModel.cs" />
     <Compile Include="ViewModel\DummyDocumentFactory.cs" />

@@ -1,6 +1,5 @@
 ﻿using AnotherOneConverter.WPF.Core;
 using AnotherOneConverter.WPF.ViewModel;
-using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls;
 using Microsoft.Practices.ServiceLocation;
 using System;
@@ -14,8 +13,6 @@ namespace AnotherOneConverter.WPF {
     public partial class MainWindow : MetroWindow {
         public MainWindow() {
             InitializeComponent();
-
-            DispatcherHelper.Initialize();
 
             var notificationService = (WpfNotificationService)ServiceLocator.Current.GetInstance<INotificationService>();
             notificationService.TaskbarIcon = TaskbarIcon;

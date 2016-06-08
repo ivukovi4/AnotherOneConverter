@@ -1,6 +1,5 @@
 ﻿using AnotherOneConverter.WPF.Core;
 using AnotherOneConverter.WPF.Properties;
-using AnotherOneConverter.WPF.Settings;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Threading;
@@ -17,6 +16,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,81 +45,47 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 Documents.Add(_documentFactory.Create(null));
             }
 
-            Documents.CollectionChanged += OnDocumentsChanged;
-
+            Directories.CollectionChanged += OnDirectoriesCollectionChanged;
+            Documents.CollectionChanged += OnDocumentsCollectionChanged;
             ActiveDocuments.CollectionChanged += OnActiveDocumentsCollectionChanged;
         }
 
+        [JsonIgnore]
         public MainViewModel MainViewModel { get; set; }
 
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        private List<FileSystemWatcher> _watchers;
-        public List<FileSystemWatcher> Watchers {
+        private ObservableCollection<DirectoryViewModel> _directories;
+        [JsonProperty(Order = 1000)]
+        public ObservableCollection<DirectoryViewModel> Directories {
             get {
-                return _watchers ?? (_watchers = new List<FileSystemWatcher>());
+                return _directories ?? (_directories = new ObservableCollection<DirectoryViewModel>());
             }
         }
 
-        public ProjectSettings Settings {
-            get {
-                return new ProjectSettings(this);
-            }
-            set {
-                if (value.Id != Guid.Empty) {
-                    Id = value.Id;
+        private void OnDirectoriesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            IsDirty = true;
+
+            if (e.OldItems != null) {
+                foreach (DirectoryViewModel directory in e.OldItems) {
+                    directory.Project = null;
+                    directory.PropertyChanged -= OnDirectoryPropertyChanged;
                 }
+            }
 
-                FileName = value.FileName;
-                PdfExportPath = value.PdfExportPath;
-                FileNameSortDirection = value.FileNameSortDirection;
-                LastWriteTimeSortDirection = value.LastWriteTimeSortDirection;
-                AutoAddWord = value.AutoAddWord;
-                AutoAddExcel = value.AutoAddExcel;
-                AutoAddPdf = value.AutoAddPdf;
-
-                AddDocument(value.Documents.ToArray());
-
-                if (value is ProjectSettingsExt) {
-                    IsDirty = ((ProjectSettingsExt)value).IsDirty;
+            if (e.NewItems != null) {
+                foreach (DirectoryViewModel directory in e.NewItems) {
+                    directory.Project = this;
+                    directory.PropertyChanged -= OnDirectoryPropertyChanged;
+                    directory.PropertyChanged += OnDirectoryPropertyChanged;
                 }
             }
         }
 
-        private bool _autoAddWord;
-        public bool AutoAddWord {
-            get {
-                return _autoAddWord;
-            }
-            set {
-                if (Set(ref _autoAddWord, value)) {
-                    IsDirty = true;
-                }
-            }
-        }
+        private void OnDirectoryPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            IsDirty = true;
 
-        private bool _autoAddExcel;
-        public bool AutoAddExcel {
-            get {
-                return _autoAddExcel;
-            }
-            set {
-                if (Set(ref _autoAddExcel, value)) {
-                    IsDirty = true;
-                }
-            }
-        }
-
-        private bool _autoAddPdf;
-        public bool AutoAddPdf {
-            get {
-                return _autoAddPdf;
-            }
-            set {
-                if (Set(ref _autoAddPdf, value)) {
-                    IsDirty = true;
-                }
-            }
+            RaisePropertyChanged(string.Format("Directories[{0}].{1}", Directories.IndexOf((DirectoryViewModel)sender), e.PropertyName));
         }
 
         private string _pdfExportPath;
@@ -141,12 +107,22 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
             set {
                 if (Set(ref _displayName, value)) {
+                    IsDirty = true;
+
                     RaisePropertyChanged(() => StatusInfo);
                 }
             }
         }
 
+        [JsonIgnore]
+        public bool DisplayNameIsDefault {
+            get {
+                return Regex.IsMatch(DisplayName, string.Format("^{0} [0-9]*$", DefaultName), RegexOptions.IgnoreCase);
+            }
+        }
+
         private ObservableCollection<DocumentViewModel> _activeDocuments;
+        [JsonIgnore]
         public ObservableCollection<DocumentViewModel> ActiveDocuments {
             get {
                 return _activeDocuments ?? (_activeDocuments = new ObservableCollection<DocumentViewModel>());
@@ -170,13 +146,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
             set {
                 if (Set(ref _fileName, value)) {
                     IsDirty = true;
-
-                    DisplayName = Path.GetFileNameWithoutExtension(FileName);
                 }
             }
         }
 
         private int? _progress;
+        [JsonIgnore]
         public int? Progress {
             get {
                 return _progress;
@@ -195,6 +170,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
+        [JsonIgnore]
         public bool IsLoading {
             get {
                 return _progress.HasValue;
@@ -202,6 +178,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private bool _isDirty;
+        [JsonProperty(Order = 9999)]
         public bool IsDirty {
             get {
                 return _isDirty;
@@ -211,6 +188,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
+        [JsonIgnore]
         public string StatusInfo {
             get {
                 var statusInfo = DisplayName;
@@ -227,14 +205,46 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private ObservableCollection<DocumentViewModel> _documents;
+        [JsonProperty(Order = 1001)]
         public ObservableCollection<DocumentViewModel> Documents {
             get {
                 return _documents ?? (_documents = new ObservableCollection<DocumentViewModel>());
             }
         }
 
-        private void OnDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void OnDocumentsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             IsDirty = true;
+
+            // delete unused directories
+            /* it breask directory serialization
+            for (int i = Directories.Count - 1; i >= 0; i--) {
+                if (Documents.Any(d => string.Equals(d.FileInfo.Directory.FullName, Directories[i].FullPath, StringComparison.InvariantCultureIgnoreCase)) == false) {
+                    DispatcherHelper.CheckBeginInvokeOnUI(() => Directories.RemoveAt(i));
+                }
+            }*/
+
+            if (e.OldItems != null) {
+                foreach (DocumentViewModel document in e.OldItems) {
+                    document.PropertyChanged -= OnDocumentPropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null) {
+                foreach (DocumentViewModel document in e.NewItems) {
+                    document.PropertyChanged -= OnDocumentPropertyChanged;
+                    document.PropertyChanged += OnDocumentPropertyChanged;
+
+                    if (Directories.Any(d => string.Equals(d.FullPath, document.FileInfo.Directory.FullName, StringComparison.InvariantCultureIgnoreCase)) == false) {
+                        DispatcherHelper.CheckBeginInvokeOnUI(() => Directories.Add(new DirectoryViewModel(_documentFactory, this, document.FileInfo.Directory.FullName)));
+                    }
+                }
+            }
+        }
+
+        private void OnDocumentPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            IsDirty = true;
+
+            RaisePropertyChanged(string.Format("Documents[{0}].{1}", Documents.IndexOf((DocumentViewModel)sender), e.PropertyName));
         }
 
         public void AddDocument(params string[] files) {
@@ -245,23 +255,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
             EnsureSorting();
         }
 
-        private void AddDocument(string filePath, bool ensureSorting = false) {
+        public void AddDocument(string filePath, bool ensureSorting = false) {
             var document = _documentFactory.Create(filePath);
             if (document == null)
                 return;
 
-            if (Watchers.Exists(w => string.Equals(w.Path, document.FileInfo.Directory.FullName, StringComparison.InvariantCultureIgnoreCase)) == false) {
-                var watcher = new FileSystemWatcher(document.FileInfo.Directory.FullName);
-                watcher.Renamed += OnDocumentRenamed;
-                watcher.Changed += OnDocumentChanged;
-                watcher.Created += OnDocumentCreated;
-                watcher.Deleted += OnDocumentDeleted;
-                watcher.EnableRaisingEvents = true;
-
-                Watchers.Add(watcher);
-            }
-
-            if (Documents.Count == 0 && string.IsNullOrEmpty(FileName)) {
+            if (DisplayNameIsDefault) {
                 DisplayName = document.FileInfo.Directory.Name;
             }
 
@@ -272,7 +271,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private async void OnDocumentCreated(object sender, FileSystemEventArgs e) {
+        /*private async void OnDocumentCreated(object sender, FileSystemEventArgs e) {
             Log.DebugFormat("OnDocumentCreated: {0}", e.FullPath);
 
             if (AutoAddWord && _documentFactory.IsWord(e.FullPath) ||
@@ -306,9 +305,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         private void OnDocumentChanged(object sender, FileSystemEventArgs e) {
             Log.DebugFormat("OnDocumentChanged: {0}", e.FullPath);
-        }
+        }*/
 
         private RelayCommand<string> _openDocuments;
+        [JsonIgnore]
         public RelayCommand<string> OpenDocuments {
             get {
                 return _openDocuments ?? (_openDocuments = new RelayCommand<string>(OnOpenDocuments, (t) => IsLoading == false));
@@ -342,10 +342,11 @@ namespace AnotherOneConverter.WPF.ViewModel {
             AddDocument(openFileDialog.FileNames);
         }
 
-        private RelayCommand _save;
-        public RelayCommand Save {
+        private RelayCommand _saveCommand;
+        [JsonIgnore]
+        public RelayCommand SaveCommand {
             get {
-                return _save ?? (_save = new RelayCommand(OnSave));
+                return _saveCommand ?? (_saveCommand = new RelayCommand(OnSave));
             }
         }
 
@@ -357,14 +358,15 @@ namespace AnotherOneConverter.WPF.ViewModel {
                 OnSaveAs();
             }
             else {
-                SaveProject();
+                Save();
             }
         }
 
-        private RelayCommand _saveAs;
-        public RelayCommand SaveAs {
+        private RelayCommand _saveAsCommand;
+        [JsonIgnore]
+        public RelayCommand SaveAsCommand {
             get {
-                return _saveAs ?? (_saveAs = new RelayCommand(OnSaveAs));
+                return _saveAsCommand ?? (_saveAsCommand = new RelayCommand(OnSaveAs));
             }
         }
 
@@ -380,23 +382,30 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
             FileName = saveFileDialog.FileName;
 
-            SaveProject();
+            if (DisplayNameIsDefault) {
+                DisplayName = Path.GetFileNameWithoutExtension(FileName);
+            }
+
+            Save();
         }
 
-        private void SaveProject() {
-            JsonSerializer serializer = new JsonSerializer();
+        private void Save() {
+            var serializer = new JsonSerializer();
+            serializer.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+
             using (var streamWriter = File.CreateText(FileName))
             using (var jsonWriter = new JsonTextWriter(streamWriter)) {
-                serializer.Serialize(jsonWriter, Settings);
+                serializer.Serialize(jsonWriter, this);
             }
 
             IsDirty = false;
         }
 
-        private RelayCommand _close;
-        public RelayCommand Close {
+        private RelayCommand _closeCommand;
+        [JsonIgnore]
+        public RelayCommand CloseCommand {
             get {
-                return _close ?? (_close = new RelayCommand(OnClose));
+                return _closeCommand ?? (_closeCommand = new RelayCommand(OnClose));
             }
         }
 
@@ -407,11 +416,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
             MainViewModel.Projects.Remove(this);
 
             if (MainViewModel.Projects.Count == 0) {
-                MainViewModel.CreateProject.Execute(null);
+                MainViewModel.CreateProjectCommand.Execute(null);
             }
         }
 
         private RelayCommand _export;
+        [JsonIgnore]
         public RelayCommand Export {
             get {
                 return _export ?? (_export = new RelayCommand(OnExport, () => IsLoading == false));
@@ -428,6 +438,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private RelayCommand _exportAs;
+        [JsonIgnore]
         public RelayCommand ExportAs {
             get {
                 return _exportAs ?? (_exportAs = new RelayCommand(OnExportAs, () => IsLoading == false));
@@ -501,6 +512,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private RelayCommand _exportToOne;
+        [JsonIgnore]
         public RelayCommand ExportToOne {
             get {
                 return _exportToOne ?? (_exportToOne = new RelayCommand(OnExportToOne, () => IsLoading == false));
@@ -517,6 +529,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private RelayCommand _exportToOneAs;
+        [JsonIgnore]
         public RelayCommand ExportToOneAs {
             get {
                 return _exportToOneAs ?? (_exportToOneAs = new RelayCommand(OnExportToOneAs, () => IsLoading == false));
@@ -563,6 +576,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private RelayCommand _documentUpCommand;
+        [JsonIgnore]
         public RelayCommand DocumentUpCommand {
             get {
                 return _documentUpCommand ?? (_documentUpCommand = new RelayCommand(OnDocumentUp, DocumentUpCommandCanExecute));
@@ -601,6 +615,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private RelayCommand _documentDownCommand;
+        [JsonIgnore]
         public RelayCommand DocumentDownCommand {
             get {
                 return _documentDownCommand ?? (_documentDownCommand = new RelayCommand(OnDocumentDown, DocumentDownCommandCanExecute));
@@ -639,6 +654,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private RelayCommand _deleteDocumentsCommand;
+        [JsonIgnore]
         public RelayCommand DeleteDocumentsCommand {
             get {
                 return _deleteDocumentsCommand ?? (_deleteDocumentsCommand = new RelayCommand(OnDeleteDocuments, DeleteDocumentsCommandCanExecute));
@@ -742,7 +758,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        private void EnsureSorting() {
+        public void EnsureSorting() {
             if (FileNameSortDirection.HasValue) {
                 SortBy(nameof(DocumentViewModel.FileName), FileNameSortDirection.Value);
             }
@@ -751,12 +767,18 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
+        public void Sync() {
+            foreach (var directory in Directories) {
+                directory.Sync();
+            }
+        }
+
         public void Dispose() {
-            foreach (var watcher in Watchers) {
-                watcher.Dispose();
+            foreach (var directory in Directories) {
+                directory.Dispose();
             }
 
-            Watchers.Clear();
+            Directories.Clear();
         }
     }
 }
