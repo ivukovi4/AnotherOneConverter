@@ -187,6 +187,15 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Directory.
+        /// </summary>
+        public static string ColumnDirectoryNameHeader {
+            get {
+                return ResourceManager.GetString("ColumnDirectoryNameHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File Name.
         /// </summary>
         public static string ColumnFileNameHeader {

@@ -195,7 +195,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             get {
                 var statusInfo = DisplayName;
 
-                if (Progress.HasValue) {
+                if (Progress.HasValue && Documents.Count > Progress.Value) {
                     statusInfo += string.Format(Resources.ConvertingFormat, Documents[Progress.Value].FileName);
                 }
                 else if (ActiveDocuments.Count > 0) {
@@ -577,6 +577,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
 
             FileNameSortDirection = null;
+            DirectoryNameSortDirection = null;
             LastWriteTimeSortDirection = null;
         }
 
@@ -616,6 +617,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
 
             FileNameSortDirection = null;
+            DirectoryNameSortDirection = null;
             LastWriteTimeSortDirection = null;
         }
 
@@ -650,6 +652,16 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
             else if (Documents.Count > 0) {
                 ActiveDocuments.Add(Documents.Last());
+            }
+        }
+
+        private ListSortDirection? _directoryNameSortDirection = null;
+        public ListSortDirection? DirectoryNameSortDirection {
+            get {
+                return _directoryNameSortDirection;
+            }
+            set {
+                Set(ref _directoryNameSortDirection, value);
             }
         }
 

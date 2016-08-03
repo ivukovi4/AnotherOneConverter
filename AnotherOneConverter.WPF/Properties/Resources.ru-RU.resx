@@ -159,6 +159,9 @@
   <data name="ColumnChangedHeader" xml:space="preserve">
     <value>Дата изменения</value>
   </data>
+  <data name="ColumnDirectoryNameHeader" xml:space="preserve">
+    <value>Папка</value>
+  </data>
   <data name="ColumnFileNameHeader" xml:space="preserve">
     <value>Имя файла</value>
   </data>

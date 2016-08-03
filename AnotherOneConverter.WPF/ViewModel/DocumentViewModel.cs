@@ -68,6 +68,13 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         [JsonIgnore]
+        public virtual string DirectoryName {
+            get {
+                return FileInfo.Directory.Name;
+            }
+        }
+
+        [JsonIgnore]
         public virtual DateTime LastWriteTime {
             get {
                 return FileInfo.LastWriteTime;

@@ -82,6 +82,13 @@
                         </DataGridTextColumn>
 
                         <DataGridTextColumn
+                            Width="*"
+                            Header="{x:Static p:Resources.ColumnDirectoryNameHeader}"
+                            Binding="{Binding DirectoryName, Mode=OneWay}"
+                            SortDirection="{Binding Data.DirectoryNameSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}">
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn
                             Width="200"
                             Header="{x:Static p:Resources.ColumnChangedHeader}"
                             Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"
