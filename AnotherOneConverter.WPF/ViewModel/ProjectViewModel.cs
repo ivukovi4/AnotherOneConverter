@@ -444,8 +444,7 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
         private async void ShowConversationSuccessMessage() {
             if (MainViewModel.IsActive == false) {
-                await DispatcherHelper.RunAsync(() =>
-                    _notificationService.Show(Resources.ConvertationSuccessTitle, Resources.ConvertationSuccessMessage));
+                await DispatcherHelper.RunAsync(() => _notificationService.Show(Resources.ConvertationSuccessTitle, Resources.ConvertationSuccessMessage));
             }
         }
 
@@ -532,7 +531,12 @@ namespace AnotherOneConverter.WPF.ViewModel {
                         }
                     }
                     catch (PdfReaderException ex) {
-                        Log.Error(string.Format("Can't open Pdf file: {0}", filePath), ex);
+                        var message = string.Format("Can't open pdf file: {0}", filePath);
+
+                        Log.Error(message, ex);
+
+                        await DispatcherHelper.RunAsync(() => _notificationService.ShowError(Resources.ErrorTitle, message));
+
                         continue;
                     }
                 }
