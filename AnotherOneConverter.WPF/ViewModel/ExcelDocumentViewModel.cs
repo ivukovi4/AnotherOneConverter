@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace AnotherOneConverter.WPF.ViewModel {
@@ -35,6 +36,19 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     oMissing, oMissing, oMissing, oMissing, oMissing, oMissing,
                     oMissing, oMissing, oMissing, oMissing, oMissing);
 
+                foreach (Microsoft.Office.Interop.Excel.Worksheet sheet in workbook.Sheets) {
+                    object missing = System.Reflection.Missing.Value;
+                    var pictures = (Microsoft.Office.Interop.Excel.Pictures)sheet.Pictures(missing);
+                    foreach (Microsoft.Office.Interop.Excel.Picture picture in pictures) {
+                        Log.Debug($"name: {picture.Name}");
+                        Log.Debug($"formula: {picture.Formula}");
+
+                        if (picture != null && picture.Name.ToLower().StartsWith("signature")) {
+                            picture.Delete();
+                        }
+                    }
+                }
+
                 try {
                     workbook.Activate();
 
@@ -67,12 +81,17 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     Log.Debug("Close Workbook Success");
                 }
             }
+            catch (Exception ex) {
+                Log.Debug(ex);
+
+                throw ex;
+            }
             finally {
                 Log.Debug("Close Application");
 
                 // word has to be cast to type _Application so that it will find
                 // the correct Quit method.
-                excel.Quit();
+                ((Microsoft.Office.Interop.Excel._Application)excel).Quit();
                 excel = null;
 
                 Log.Debug("Close Application Success");

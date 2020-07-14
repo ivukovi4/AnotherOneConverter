@@ -1,39 +1,47 @@
-﻿using GalaSoft.MvvmLight;
+﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Threading;
 using log4net;
-using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace AnotherOneConverter.WPF.ViewModel {
-    public class DirectoryViewModel : ObservableObject, IDisposable {
+namespace AnotherOneConverter.WPF.ViewModel
+{
+    public class DirectoryViewModel : ObservableObject, IDisposable
+    {
         private static readonly ILog Log = LogManager.GetLogger(typeof(DirectoryViewModel));
 
         private readonly IDocumentFactory _documentFactory;
 
         public DirectoryViewModel() : this(ServiceLocator.Current.GetInstance<IDocumentFactory>()) { }
 
-        public DirectoryViewModel(IDocumentFactory documentFactory) {
+        public DirectoryViewModel(IDocumentFactory documentFactory)
+        {
             _documentFactory = documentFactory;
         }
 
-        public DirectoryViewModel(IDocumentFactory documentFactory, ProjectViewModel project) : this(documentFactory) {
+        public DirectoryViewModel(IDocumentFactory documentFactory, ProjectViewModel project) : this(documentFactory)
+        {
             Project = project;
         }
 
-        public DirectoryViewModel(IDocumentFactory documentFactory, ProjectViewModel project, string fullPath) : this(documentFactory, project) {
+        public DirectoryViewModel(IDocumentFactory documentFactory, ProjectViewModel project, string fullPath) : this(documentFactory, project)
+        {
             FullPath = fullPath;
         }
 
         private ProjectViewModel _project;
         [JsonIgnore]
-        public ProjectViewModel Project {
-            get {
+        public ProjectViewModel Project
+        {
+            get
+            {
                 return _project;
             }
-            set {
+            set
+            {
                 Set(ref _project, value);
             }
         }
@@ -45,12 +53,16 @@ namespace AnotherOneConverter.WPF.ViewModel {
         public FileSystemWatcher Watcher { get; private set; }
 
         private string _fullPath;
-        public string FullPath {
-            get {
+        public string FullPath
+        {
+            get
+            {
                 return _fullPath;
             }
-            set {
-                if (Set(ref _fullPath, value)) {
+            set
+            {
+                if (Set(ref _fullPath, value))
+                {
                     InvalidateWatcher();
 
                     DirectoryInfo = new DirectoryInfo(_fullPath);
@@ -61,49 +73,63 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         [JsonIgnore]
-        public string DisplayName {
-            get {
+        public string DisplayName
+        {
+            get
+            {
                 return DirectoryInfo.Name;
             }
         }
 
         private bool _syncWord = true;
-        public bool SyncWord {
-            get {
+        public bool SyncWord
+        {
+            get
+            {
                 return _syncWord;
             }
-            set {
+            set
+            {
                 Set(ref _syncWord, value);
             }
         }
 
         private bool _syncExcel = true;
-        public bool SyncExcel {
-            get {
+        public bool SyncExcel
+        {
+            get
+            {
                 return _syncExcel;
             }
-            set {
+            set
+            {
                 Set(ref _syncExcel, value);
             }
         }
 
         private bool _syncPdf;
-        public bool SyncPdf {
-            get {
+        public bool SyncPdf
+        {
+            get
+            {
                 return _syncPdf;
             }
-            set {
+            set
+            {
                 Set(ref _syncPdf, value);
             }
         }
 
-        private void InvalidateWatcher() {
-            if (Watcher != null && string.Equals(Watcher.Path, FullPath, StringComparison.InvariantCultureIgnoreCase) == false) {
+        private void InvalidateWatcher()
+        {
+            if (Watcher != null && string.Equals(Watcher.Path, FullPath, StringComparison.InvariantCultureIgnoreCase) == false)
+            {
                 Watcher.Dispose();
                 Watcher = null;
             }
 
-            if (Watcher == null && string.IsNullOrEmpty(FullPath) == false) {
+            if (Watcher == null && string.IsNullOrEmpty(FullPath) == false)
+            {
                 Watcher = new FileSystemWatcher(FullPath);
                 Watcher.Renamed += OnDocumentRenamed;
                 Watcher.Changed += OnDocumentChanged;
@@ -113,23 +139,29 @@ namespace AnotherOneConverter.WPF.ViewModel {
             }
         }
 
-        public void Sync() {
-            if (Project == null || DirectoryInfo == null) {
+        public void Sync()
+        {
+            if (Project == null || DirectoryInfo == null)
+            {
                 return;
             }
 
-            foreach (var fileInfo in DirectoryInfo.EnumerateFiles()) {
-                if (Project.Documents.Any(d => string.Equals(d.FullPath, fileInfo.FullName, StringComparison.InvariantCultureIgnoreCase))) {
+            foreach (var fileInfo in DirectoryInfo.EnumerateFiles())
+            {
+                if (Project.Documents.Any(d => string.Equals(d.FullPath, fileInfo.FullName, StringComparison.InvariantCultureIgnoreCase)))
+                {
                     continue;
                 }
                 else if ((fileInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
-                    (fileInfo.Attributes & FileAttributes.Temporary) != FileAttributes.Temporary) {
+                    (fileInfo.Attributes & FileAttributes.Temporary) != FileAttributes.Temporary)
+                {
                     TryCreateDocument(fileInfo.FullName);
                 }
             }
         }
 
-        private void OnDocumentDeleted(object sender, FileSystemEventArgs e) {
+        private void OnDocumentDeleted(object sender, FileSystemEventArgs e)
+        {
             Log.DebugFormat("OnDocumentDeleted: {0}", e.FullPath);
 
             var document = Project.Documents.FirstOrDefault(d => string.Equals(d.FullPath, e.FullPath, StringComparison.InvariantCultureIgnoreCase));
@@ -139,38 +171,46 @@ namespace AnotherOneConverter.WPF.ViewModel {
             DispatcherHelper.CheckBeginInvokeOnUI(() => Project.Documents.Remove(document));
         }
 
-        private void OnDocumentCreated(object sender, FileSystemEventArgs e) {
+        private void OnDocumentCreated(object sender, FileSystemEventArgs e)
+        {
             Log.DebugFormat("OnDocumentCreated: {0}", e.FullPath);
 
             var fileInfo = new FileInfo(e.FullPath);
             if ((fileInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden ||
-                (fileInfo.Attributes & FileAttributes.Temporary) == FileAttributes.Temporary) {
+                (fileInfo.Attributes & FileAttributes.Temporary) == FileAttributes.Temporary)
+            {
                 return;
             }
         }
 
-        private void OnDocumentChanged(object sender, FileSystemEventArgs e) {
+        private void OnDocumentChanged(object sender, FileSystemEventArgs e)
+        {
             Log.DebugFormat("OnDocumentChanged: {0}", e.FullPath);
         }
 
-        private void OnDocumentRenamed(object sender, RenamedEventArgs e) {
+        private void OnDocumentRenamed(object sender, RenamedEventArgs e)
+        {
             Log.DebugFormat("OnDocumentRenamed: {0}, {1}", e.OldFullPath, e.FullPath);
 
             var document = Project.Documents.FirstOrDefault(d => string.Equals(d.FullPath, e.OldFullPath, StringComparison.InvariantCultureIgnoreCase));
-            if (document != null) {
+            if (document != null)
+            {
                 document.FullPath = e.FullPath;
 
                 DispatcherHelper.CheckBeginInvokeOnUI(() => Project.EnsureSorting());
             }
-            else {
+            else
+            {
                 TryCreateDocument(e.FullPath);
             }
         }
 
-        private bool TryCreateDocument(string fullPath) {
+        private bool TryCreateDocument(string fullPath)
+        {
             if (SyncWord && _documentFactory.IsWord(fullPath) ||
                 SyncExcel && _documentFactory.IsExcel(fullPath) ||
-                SyncPdf && _documentFactory.IsPdf(fullPath)) {
+                SyncPdf && _documentFactory.IsPdf(fullPath))
+            {
                 DispatcherHelper.CheckBeginInvokeOnUI(() => Project.AddDocument(fullPath, ensureSorting: true));
 
                 return true;
@@ -179,8 +219,10 @@ namespace AnotherOneConverter.WPF.ViewModel {
             return false;
         }
 
-        public void Dispose() {
-            if (Watcher != null) {
+        public void Dispose()
+        {
+            if (Watcher != null)
+            {
                 Watcher.Dispose();
                 Watcher = null;
             }
