@@ -1,12 +1,14 @@
-﻿using GalaSoft.MvvmLight;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GalaSoft.MvvmLight;
+using Newtonsoft.Json;
 
-namespace AnotherOneConverter.WPF.ViewModel {
-    public abstract class DocumentViewModel : ObservableObject {
+namespace AnotherOneConverter.WPF.ViewModel
+{
+    public abstract class DocumentViewModel : ObservableObject
+    {
         public DocumentViewModel() { }
 
         [JsonIgnore]
@@ -17,15 +19,19 @@ namespace AnotherOneConverter.WPF.ViewModel {
         [JsonIgnore]
         public FileInfo FileInfo { get; private set; }
 
-        public void Invalidate() {
+        public void Invalidate()
+        {
             Invalidate(false);
         }
 
-        private void Invalidate(bool force) {
-            if (force || FileInfo == null) {
+        private void Invalidate(bool force)
+        {
+            if (force || FileInfo == null)
+            {
                 FileInfo = new FileInfo(_fullPath);
             }
-            else {
+            else
+            {
                 FileInfo.Refresh();
             }
 
@@ -35,48 +41,62 @@ namespace AnotherOneConverter.WPF.ViewModel {
         }
 
         private string _fullPath;
-        public string FullPath {
-            get {
+        public string FullPath
+        {
+            get
+            {
                 return _fullPath;
             }
-            set {
-                if (Set(ref _fullPath, value)) {
+            set
+            {
+                if (Set(ref _fullPath, value))
+                {
                     Invalidate(true);
                 }
             }
         }
 
         [JsonIgnore]
-        public virtual bool Exists {
-            get {
+        public virtual bool Exists
+        {
+            get
+            {
                 return FileInfo.Exists;
             }
         }
 
         [JsonIgnore]
-        public virtual bool Supported {
-            get {
+        public virtual bool Supported
+        {
+            get
+            {
                 return SupportedExtensions.Contains(FileInfo.Extension.ToLower());
             }
         }
 
         [JsonIgnore]
-        public virtual string FileName {
-            get {
+        public virtual string FileName
+        {
+            get
+            {
                 return FileInfo.Name;
             }
         }
 
         [JsonIgnore]
-        public virtual string DirectoryName {
-            get {
+        public virtual string DirectoryName
+        {
+            get
+            {
                 return FileInfo.Directory.Name;
             }
         }
 
         [JsonIgnore]
-        public virtual DateTime LastWriteTime {
-            get {
+        public virtual DateTime LastWriteTime
+        {
+            get
+            {
                 return FileInfo.LastWriteTime;
             }
         }

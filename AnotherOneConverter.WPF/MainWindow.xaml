@@ -29,7 +29,7 @@
     MahAppsDialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
-    <Window.Resources>
+    <!--<Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
@@ -336,6 +336,6 @@
 
             </MahApps:Flyout>
         </MahApps:FlyoutsControl>
-    </MahApps:MetroWindow.Flyouts>
+    </MahApps:MetroWindow.Flyouts>-->
 
 </MahApps:MetroWindow>
