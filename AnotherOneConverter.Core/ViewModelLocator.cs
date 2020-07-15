@@ -21,6 +21,7 @@ namespace AnotherOneConverter.Core
             services
                 .AddScoped<IProjectContextAccessor, ProjectContextAccessor>()
                 .AddScoped<IDocumentManager, DocumentManager>()
+                .AddScoped<IFileManager, FileManager>()
                 .AddScoped<ProjectViewModel>();
 
             Services = services.BuildServiceProvider();

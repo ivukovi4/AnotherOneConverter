@@ -20,9 +20,8 @@ namespace AnotherOneConverter.Core.ViewModel
             _services = services ?? throw new ArgumentNullException(nameof(services));
 
             NewProjectCommand = new RelayCommand(OnNewProject);
-            CloseProjectCommand = new RelayCommand(OnCloseProject);
+            CloseProjectCommand = new RelayCommand<ProjectContext>(OnCloseProject, c => c != null);
             Loaded = new RelayCommand(OnLoaded);
-
 
             Projects.Add(CreateProjectContext());
             Projects.Add(CreateProjectContext());
@@ -35,15 +34,35 @@ namespace AnotherOneConverter.Core.ViewModel
 
         public ICommand Loaded { get; }
 
-        private void OnCloseProject()
+        private ProjectContext _selectedProjectContext;
+        public ProjectContext SelectedProjectContext
         {
+            get => _selectedProjectContext;
+            set
+            {
+                if (Set(ref _selectedProjectContext, value))
+                {
+                    RaisePropertyChanged(() => SelectedProject);
+                }
+            }
+        }
+
+        public ProjectViewModel SelectedProject => SelectedProjectContext?.ViewModel;
+
+        private void OnCloseProject(ProjectContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            Projects.Remove(context);
+            context.Dispose();
         }
 
         private void OnNewProject()
         {
             Projects.Add(CreateProjectContext());
-
-            RaisePropertyChanged(() => Projects);
         }
 
         private void OnLoaded()

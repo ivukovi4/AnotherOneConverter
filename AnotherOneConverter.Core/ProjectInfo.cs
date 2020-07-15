@@ -16,8 +16,6 @@ namespace AnotherOneConverter.Core
 
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public ObservableCollection<IDirectory> Directories { get; } = new ObservableCollection<IDirectory>();
-
         private string _pdfExportPath;
         public string PdfExportPath
         {

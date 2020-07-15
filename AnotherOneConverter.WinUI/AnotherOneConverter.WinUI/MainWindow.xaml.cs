@@ -1,7 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using AnotherOneConverter.Core;
+﻿using AnotherOneConverter.Core;
 using AnotherOneConverter.Core.ViewModel;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace AnotherOneConverter.WinUI
 {
@@ -14,34 +14,29 @@ namespace AnotherOneConverter.WinUI
         {
             InitializeComponent();
 
-            //Microsoft.Xaml.Behaviors.InvokeCommandAction
-
             Locator = (ViewModelLocator)Application.Current.Resources["Locator"];
 
             LayoutRoot.Loaded -= OnLoaded;
             LayoutRoot.Loaded += OnLoaded;
 
-            _data = new ObservableCollection<ProjectInfo>();
-
-            _data.Add(new ProjectInfo());
+            Tabs.TabCloseRequested -= OnTabCloseRequested;
+            Tabs.TabCloseRequested += OnTabCloseRequested;
         }
 
-        ObservableCollection<ProjectInfo> _data { get; }
+        private void OnTabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+        {
+            if (ViewModel.CloseProjectCommand.CanExecute(args.Item))
+            {
+                ViewModel.CloseProjectCommand.Execute(args.Item);
+            }
+        }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            _data.Add(new ProjectInfo());
-
-
-
-            Bindings.Update();
-
-            //if (ViewModel.Loaded.CanExecute(null))
-            //{
-            //    ViewModel.Loaded.Execute(null);
-            //}
-
-            //Bindings.Update();
+            if (ViewModel.Loaded.CanExecute(null))
+            {
+                ViewModel.Loaded.Execute(null);
+            }
         }
 
         public ViewModelLocator Locator { get; }

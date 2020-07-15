@@ -30,8 +30,9 @@
                 <MenuFlyoutItem Text="Export to one as ..."/>
             </muxc:MenuBarItem>
             <muxc:MenuBarItem Title="Project">
-                <MenuFlyoutItem Text="New"/>
-                <MenuFlyoutItem Text="Open ..."/>
+                <muxc:MenuFlyoutItem Text="New" Command="{x:Bind ViewModel.NewProjectCommand}"/>
+                <muxc:MenuFlyoutItem Text="Open file" Command="{x:Bind ViewModel.SelectedProject.AddFile, Mode=OneWay}" />
+                <muxc:MenuFlyoutItem Text="Open folder" Command="{x:Bind ViewModel.SelectedProject.AddDirectory, Mode=OneWay}" />
                 <MenuFlyoutItem Text="Save"/>
                 <MenuFlyoutItem Text="Save as ..."/>
                 <MenuFlyoutItem Text="Settings"/>
@@ -63,11 +64,15 @@
 
         <muxc:TabView
             muxc:Grid.Row="2"
-            TabItemsSource="{x:Bind _data, Mode=OneWay}"
-            >
+            x:Name="Tabs"
+            SelectedItem="{x:Bind ViewModel.SelectedProjectContext, Mode=TwoWay}"
+            TabItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
+            AddTabButtonCommand="{x:Bind ViewModel.NewProjectCommand}">
             <muxc:TabView.TabItemTemplate>
-                <DataTemplate x:DataType="core:ProjectInfo">
-                    <muxc:TabViewItem Header="{x:Bind Id, Mode=OneWay}" Content="Project Content"  />
+                <DataTemplate x:DataType="core:ProjectContext">
+                    <muxc:TabViewItem
+                        Header="{x:Bind ViewModel.Info.DisplayName, Mode=OneWay}"
+                        Content="{x:Bind ViewModel.Info.Id, Mode=OneWay}"  />
                 </DataTemplate>
             </muxc:TabView.TabItemTemplate>
         </muxc:TabView>

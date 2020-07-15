@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 
 namespace AnotherOneConverter.Core
 {
     public interface IProjectInfo
     {
         Guid Id { get; set; }
-
-        ObservableCollection<IDirectory> Directories { get; }
 
         string PdfExportPath { get; set; }
 
