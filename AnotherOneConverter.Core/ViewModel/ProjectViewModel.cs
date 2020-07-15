@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -11,6 +12,7 @@ namespace AnotherOneConverter.Core.ViewModel
         protected bool _disposed = false;
 
         private readonly IFileManager _fileManager;
+        private readonly IFilePickerHelpers _filePickerHelpers;
 
         public ICommand AddDirectory { get; }
 
@@ -22,9 +24,10 @@ namespace AnotherOneConverter.Core.ViewModel
 
         public ObservableCollection<FileViewModel> Files => _fileManager.Files;
 
-        public ProjectViewModel(IFileManager fileManager)
+        public ProjectViewModel(IFileManager fileManager, IFilePickerHelpers filePickerHelpers)
         {
             _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
+            _filePickerHelpers = filePickerHelpers ?? throw new ArgumentNullException(nameof(filePickerHelpers));
 
             AddDirectory = new RelayCommand(OnAddDirectory);
             AddFile = new RelayCommand(OnAddFile);
@@ -39,22 +42,21 @@ namespace AnotherOneConverter.Core.ViewModel
         {
         }
 
-        private void OnAddDirectory()
+        private async void OnAddDirectory()
         {
+            if (Debugger.IsAttached)
+            {
+                _fileManager.AddProvider(@"C:\Users\ivukovi4\Downloads\XAML_Controls_Gallery");
+            }
+            else
+            {
+                var path = await _filePickerHelpers.PickFolderAsync();
+                if (!string.IsNullOrEmpty(path))
+                {
+                    _fileManager.AddProvider(path);
+                }
+            }
         }
-
-        //using var dialog = new FolderBrowserDialog();
-        //if (dialog.ShowDialog() != DialogResult.OK)
-        //    return;
-
-        //_fileManager.AddProvider(dialog.SelectedPath);
-
-        //private async Task OnAddDirectoryAsync()
-        //{
-
-
-        //    return Task.CompletedTask;
-        //}
 
         public void Dispose()
         {

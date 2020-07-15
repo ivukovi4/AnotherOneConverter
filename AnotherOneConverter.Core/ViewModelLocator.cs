@@ -10,9 +10,11 @@ namespace AnotherOneConverter.Core
     {
         public IServiceProvider Services { get; }
 
-        public ViewModelLocator()
+        public ViewModelLocator(Action<ServiceCollection> configure = null)
         {
             var services = new ServiceCollection();
+
+            configure?.Invoke(services);
 
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<IDocumentFactory, DocumentFactory>();

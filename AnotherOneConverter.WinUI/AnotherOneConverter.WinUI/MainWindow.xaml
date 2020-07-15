@@ -65,14 +65,23 @@
         <muxc:TabView
             muxc:Grid.Row="2"
             x:Name="Tabs"
+            SelectedIndex="0"
             SelectedItem="{x:Bind ViewModel.SelectedProjectContext, Mode=TwoWay}"
             TabItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
             AddTabButtonCommand="{x:Bind ViewModel.NewProjectCommand}">
             <muxc:TabView.TabItemTemplate>
                 <DataTemplate x:DataType="core:ProjectContext">
-                    <muxc:TabViewItem
-                        Header="{x:Bind ViewModel.Info.DisplayName, Mode=OneWay}"
-                        Content="{x:Bind ViewModel.Info.Id, Mode=OneWay}"  />
+                    <muxc:TabViewItem Header="{x:Bind ViewModel.Info.DisplayName, Mode=OneWay}">
+                        <muxc:TabViewItem.Content>
+                            <muxc:TreeView ItemsSource="{x:Bind ViewModel.Files}">
+                                <muxc:TreeView.ItemTemplate>
+                                    <DataTemplate x:DataType="core:ViewModel.FileViewModel">
+                                        <muxc:TreeViewItem ItemsSource="{x:Bind Children, Mode=OneWay}" Content="{x:Bind Name}" IsExpanded="True"/>
+                                    </DataTemplate>
+                                </muxc:TreeView.ItemTemplate>
+                            </muxc:TreeView>
+                        </muxc:TabViewItem.Content>
+                    </muxc:TabViewItem>
                 </DataTemplate>
             </muxc:TabView.TabItemTemplate>
         </muxc:TabView>

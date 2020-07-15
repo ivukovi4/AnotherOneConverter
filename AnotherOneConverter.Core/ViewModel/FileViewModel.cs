@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using GalaSoft.MvvmLight;
 using Microsoft.Extensions.FileProviders;
 
@@ -16,7 +18,9 @@ namespace AnotherOneConverter.Core.ViewModel
             {
                 Children = new ObservableCollection<FileViewModel>();
 
-                foreach (var children in Provider.GetDirectoryContents(FileInfo == null ? "" : FileInfo.PhysicalPath))
+                foreach (var children in Provider
+                    .GetDirectoryContents(FileInfo == null ? "" : Path.GetRelativePath(provider.Root, FileInfo.PhysicalPath))
+                    .OrderByDescending(x => x.IsDirectory))
                 {
                     Children.Add(new FileViewModel(provider, children));
                 }
@@ -26,6 +30,8 @@ namespace AnotherOneConverter.Core.ViewModel
         public ObservableCollection<FileViewModel> Children { get; }
 
         public IFileInfo FileInfo { get; }
+
+        public string Name => FileInfo?.Name ?? Path.GetDirectoryName(Provider.Root);
 
         public PhysicalFileProvider Provider { get; }
     }

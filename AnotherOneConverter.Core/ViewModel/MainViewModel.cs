@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -22,10 +23,6 @@ namespace AnotherOneConverter.Core.ViewModel
             NewProjectCommand = new RelayCommand(OnNewProject);
             CloseProjectCommand = new RelayCommand<ProjectContext>(OnCloseProject, c => c != null);
             Loaded = new RelayCommand(OnLoaded);
-
-            Projects.Add(CreateProjectContext());
-            Projects.Add(CreateProjectContext());
-            Projects.Add(CreateProjectContext());
         }
 
         public ICommand CloseProjectCommand { get; }
@@ -62,20 +59,26 @@ namespace AnotherOneConverter.Core.ViewModel
 
         private void OnNewProject()
         {
-            Projects.Add(CreateProjectContext());
+            AddProject();
         }
 
         private void OnLoaded()
         {
-            Projects.Add(CreateProjectContext());
+            AddProject();
         }
 
-        private ProjectContext CreateProjectContext()
+        private void AddProject()
         {
             var context = new ProjectContext(_services.CreateScope());
             var projectContextAccessor = context.Services.GetRequiredService<IProjectContextAccessor>();
             projectContextAccessor.ProjectContext = context;
-            return context;
+
+            Projects.Add(context);
+
+            if (SelectedProjectContext == null)
+            {
+                SelectedProjectContext = context;
+            }
         }
 
         public void Dispose()
