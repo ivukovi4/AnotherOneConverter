@@ -18,7 +18,13 @@ namespace AnotherOneConverter.Core
             services.AddSingleton<IDocumentFactory, DocumentFactory>();
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IPdfConverter), typeof(PdfConverter)));
 
+            services
+                .AddScoped<IProjectContextAccessor, ProjectContextAccessor>()
+                .AddScoped<IDocumentManager, DocumentManager>()
+                .AddScoped<ProjectViewModel>();
+
             Services = services.BuildServiceProvider();
+            MainViewModel = Services.GetRequiredService<MainViewModel>();
         }
 
         public MainViewModel MainViewModel { get; }

@@ -2,15 +2,18 @@
     x:Class="AnotherOneConverter.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AnotherOneConverter.WinUI">
+    xmlns:local="using:AnotherOneConverter.WinUI"
+    xmlns:core="using:AnotherOneConverter.Core">
 
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+
+                <ResourceDictionary Source="Tab.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!--<core:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:core="using:AnotherOneConverter.Core" />-->
+            <core:ViewModelLocator x:Key="Locator" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

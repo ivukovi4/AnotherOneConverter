@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AnotherOneConverter.WinUI"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls">
+
+
+    <DataTemplate x:Name="ProjectTabTemplate">
+        <muxc:TabViewItem Header="{Binding ViewModel}" Content="Project Content"  />
+    </DataTemplate>
+
+</ResourceDictionary>

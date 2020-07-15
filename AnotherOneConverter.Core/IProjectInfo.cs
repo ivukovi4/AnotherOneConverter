@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace AnotherOneConverter.Core
 {
-    public interface IProject
+    public interface IProjectInfo
     {
         Guid Id { get; set; }
 

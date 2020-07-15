@@ -6,7 +6,7 @@ using GalaSoft.MvvmLight;
 
 namespace AnotherOneConverter.Core
 {
-    public class Project : ObservableObject, IProject
+    public class ProjectInfo : ObservableObject, IProjectInfo
     {
         private const string DisplayNameFormat = "Untitled {0}";
 
