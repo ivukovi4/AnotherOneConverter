@@ -22,6 +22,8 @@ namespace AnotherOneConverter.Core.ViewModel
 
         public IProjectInfo Info { get; } = new ProjectInfo();
 
+        public ObservableCollection<FileViewModel> FilesTree => _fileManager.FilesTree;
+
         public ObservableCollection<FileViewModel> Files => _fileManager.Files;
 
         public ProjectViewModel(IFileManager fileManager, IFilePickerHelpers filePickerHelpers)
@@ -73,6 +75,8 @@ namespace AnotherOneConverter.Core.ViewModel
 
             if (disposing)
             {
+
+
                 // 
             }
 

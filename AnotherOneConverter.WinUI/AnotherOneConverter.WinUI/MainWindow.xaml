@@ -7,14 +7,11 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
     mc:Ignorable="d">
 
     <muxc:Grid x:Name="LayoutRoot">
-        <muxc:Grid.ColumnDefinitions>
-            <muxc:ColumnDefinition />
-        </muxc:Grid.ColumnDefinitions>
-
         <muxc:Grid.RowDefinitions>
             <muxc:RowDefinition Height="Auto"/>
             <muxc:RowDefinition Height="Auto"/>
@@ -63,9 +60,11 @@
         </muxc:CommandBar>
 
         <muxc:TabView
-            muxc:Grid.Row="2"
+            Grid.Row="2"
             x:Name="Tabs"
             SelectedIndex="0"
+            VerticalAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
             SelectedItem="{x:Bind ViewModel.SelectedProjectContext, Mode=TwoWay}"
             TabItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
             AddTabButtonCommand="{x:Bind ViewModel.NewProjectCommand}">
@@ -73,13 +72,33 @@
                 <DataTemplate x:DataType="core:ProjectContext">
                     <muxc:TabViewItem Header="{x:Bind ViewModel.Info.DisplayName, Mode=OneWay}">
                         <muxc:TabViewItem.Content>
-                            <muxc:TreeView ItemsSource="{x:Bind ViewModel.Files}">
-                                <muxc:TreeView.ItemTemplate>
-                                    <DataTemplate x:DataType="core:ViewModel.FileViewModel">
-                                        <muxc:TreeViewItem ItemsSource="{x:Bind Children, Mode=OneWay}" Content="{x:Bind Name}" IsExpanded="True"/>
-                                    </DataTemplate>
-                                </muxc:TreeView.ItemTemplate>
-                            </muxc:TreeView>
+                            <muxc:Grid>
+                                <muxc:Grid.ColumnDefinitions>
+                                    <muxc:ColumnDefinition Width="250"/>
+                                    <muxc:ColumnDefinition/>
+                                </muxc:Grid.ColumnDefinitions>
+
+                                <muxc:TreeView ItemsSource="{x:Bind ViewModel.FilesTree}">
+                                    <muxc:TreeView.ItemTemplate>
+                                        <DataTemplate x:DataType="core:ViewModel.FileViewModel">
+                                            <muxc:TreeViewItem ItemsSource="{x:Bind Directories, Mode=OneWay}" Content="{x:Bind Name}" IsExpanded="True"/>
+                                        </DataTemplate>
+                                    </muxc:TreeView.ItemTemplate>
+                                </muxc:TreeView>
+
+                                <controls:DataGrid
+                                    Grid.Column="1"
+                                    AutoGenerateColumns="False"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    IsReadOnly="True"
+                                    HeadersVisibility="Column"
+                                    ItemsSource="{x:Bind ViewModel.Files}">
+                                    <controls:DataGrid.Columns>
+                                        <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Tag="Name" />
+                                    </controls:DataGrid.Columns>
+                                </controls:DataGrid>
+                            </muxc:Grid>
                         </muxc:TabViewItem.Content>
                     </muxc:TabViewItem>
                 </DataTemplate>

@@ -12,26 +12,41 @@ namespace AnotherOneConverter.Core.ViewModel
         public FileViewModel(PhysicalFileProvider provider, IFileInfo fileInfo = null)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+
             FileInfo = fileInfo;
 
             if (FileInfo == null || FileInfo.IsDirectory)
             {
-                Children = new ObservableCollection<FileViewModel>();
+                Directories = new ObservableCollection<FileViewModel>();
+                Files = new ObservableCollection<FileViewModel>();
 
                 foreach (var children in Provider
                     .GetDirectoryContents(FileInfo == null ? "" : Path.GetRelativePath(provider.Root, FileInfo.PhysicalPath))
                     .OrderByDescending(x => x.IsDirectory))
                 {
-                    Children.Add(new FileViewModel(provider, children));
+                    if (children.IsDirectory)
+                    {
+                        Directories.Add(new FileViewModel(provider, children));
+                    }
+                    else
+                    {
+                        Files.Add(new FileViewModel(provider, children));
+                    }
                 }
             }
         }
 
-        public ObservableCollection<FileViewModel> Children { get; }
+        public ObservableCollection<FileViewModel> Directories { get; }
+
+        public ObservableCollection<FileViewModel> Files { get; }
 
         public IFileInfo FileInfo { get; }
 
-        public string Name => FileInfo?.Name ?? Path.GetDirectoryName(Provider.Root);
+        public bool IsDirectory => FileInfo != null ? FileInfo.IsDirectory : true;
+
+        public string NormalizedRoot => Provider.Root.Replace('\\', '/').TrimEnd('/');
+
+        public string Name => FileInfo?.Name ?? Path.GetRelativePath(Path.GetDirectoryName(NormalizedRoot), NormalizedRoot);
 
         public PhysicalFileProvider Provider { get; }
     }

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using AnotherOneConverter.Core.ViewModel;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Primitives;
 
 namespace AnotherOneConverter.Core
 {
@@ -12,24 +11,26 @@ namespace AnotherOneConverter.Core
     {
         protected bool _disposed = false;
 
-        public ObservableCollection<FileViewModel> Files { get; } = new ObservableCollection<FileViewModel>();
+        public ObservableCollection<FileViewModel> FilesTree { get; } = new ObservableCollection<FileViewModel>();
 
         private readonly List<PhysicalFileProvider> _providers = new List<PhysicalFileProvider>();
         public IReadOnlyCollection<PhysicalFileProvider> Providers => _providers;
 
-        private readonly List<IChangeToken> _changeTokens = new List<IChangeToken>();
+        public ObservableCollection<FileViewModel> Files { get; } = new ObservableCollection<FileViewModel>();
+
+        // private readonly List<IChangeToken> _changeTokens = new List<IChangeToken>();
 
         public void AddProvider(string root)
         {
             if (_providers.Any(x => string.Equals(x.Root, root, StringComparison.InvariantCultureIgnoreCase)) == false)
             {
-                var provider = new PhysicalFileProvider(root);
-                var token = provider.Watch("**/*");
-                token.RegisterChangeCallback(OnChange, provider);
-                _changeTokens.Add(token);
-                _providers.Add(provider);
+                // var provider = new PhysicalFileProvider(root);
+                // var token = provider.Watch("**/*");
+                // token.RegisterChangeCallback(OnChange, provider);
+                // _changeTokens.Add(token);
+                _providers.Add(new PhysicalFileProvider(root));
 
-                ReloadFiles();
+                ReloadFilesTree();
             }
         }
 
@@ -40,24 +41,39 @@ namespace AnotherOneConverter.Core
             {
                 _providers.Remove(provider);
 
-                ReloadFiles();
+                ReloadFilesTree();
             }
+        }
+
+        private void ReloadFilesTree()
+        {
+            FilesTree.Clear();
+
+            foreach (var provider in _providers)
+            {
+                FilesTree.Add(new FileViewModel(provider));
+            }
+
+            ReloadFiles();
         }
 
         private void ReloadFiles()
         {
             Files.Clear();
 
-            foreach (var provider in _providers)
+            foreach (var file in Flatten(FilesTree).Where(c => c.IsDirectory == false))
             {
-                Files.Add(new FileViewModel(provider));
+                Files.Add(file);
             }
         }
 
-        private void OnChange(object state)
-        {
-            ReloadFiles();
-        }
+        private IEnumerable<FileViewModel> Flatten(IEnumerable<FileViewModel> e) =>
+            e.SelectMany(c => Flatten(c.Directories).Concat(c.Files)).Concat(e);
+
+        //private void OnChange(object state)
+        //{
+        //    ReloadFiles();
+        //}
 
         public void Dispose()
         {
@@ -80,7 +96,7 @@ namespace AnotherOneConverter.Core
                 }
 
                 _providers.Clear();
-                Files.Clear();
+                FilesTree.Clear();
             }
 
             _disposed = true;

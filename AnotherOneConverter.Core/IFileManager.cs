@@ -7,6 +7,8 @@ namespace AnotherOneConverter.Core
 {
     public interface IFileManager
     {
+        ObservableCollection<FileViewModel> FilesTree { get; }
+
         ObservableCollection<FileViewModel> Files { get; }
 
         IReadOnlyCollection<PhysicalFileProvider> Providers { get; }
