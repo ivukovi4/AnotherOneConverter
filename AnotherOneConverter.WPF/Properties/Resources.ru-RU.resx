@@ -234,6 +234,9 @@
   <data name="ProjectSettingsFlyoutHeader" xml:space="preserve">
     <value>Настройки проекта</value>
   </data>
+  <data name="ProjectSettingsNameTitle" xml:space="preserve">
+    <value>Наименование проекта</value>
+  </data>
   <data name="ProjectSettingsSyncFilesTitle" xml:space="preserve">
     <value>Синхронизация файлов в папках</value>
   </data>

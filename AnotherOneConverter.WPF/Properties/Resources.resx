@@ -238,6 +238,9 @@
   <data name="ProjectSettingsFlyoutHeader" xml:space="preserve">
     <value>Project Settings</value>
   </data>
+  <data name="ProjectSettingsNameTitle" xml:space="preserve">
+    <value>Project name</value>
+  </data>
   <data name="ProjectSettingsSyncFilesTitle" xml:space="preserve">
     <value>Sync folders</value>
   </data>

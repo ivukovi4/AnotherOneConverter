@@ -27,14 +27,19 @@
     Activated="OnActivated"
     Deactivated="OnDeactivated"
     MahAppsDialog:DialogParticipation.Register="{Binding}"
-    BorderBrush="{StaticResource AccentColorBrush}"
+    BorderBrush="{StaticResource MahApps.Brushes.Accent}"
     DataContext="{Binding Main, Source={StaticResource Locator}}">
-    <!--<Window.Resources>
+
+    <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ProgressBar.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="TextBlockEllipsis" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            </Style>
 
             <Converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></Converters:BooleanToVisibilityConverter>
 
@@ -76,6 +81,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn
                             Width="*"
+                            ElementStyle="{StaticResource TextBlockEllipsis}"
                             Header="{x:Static p:Resources.ColumnFileNameHeader}"
                             Binding="{Binding FileName, Mode=OneWay}"
                             SortDirection="{Binding Data.FileNameSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}">
@@ -83,16 +89,17 @@
 
                         <DataGridTextColumn
                             Width="*"
+                            ElementStyle="{StaticResource TextBlockEllipsis}"
                             Header="{x:Static p:Resources.ColumnDirectoryNameHeader}"
                             Binding="{Binding DirectoryName, Mode=OneWay}"
-                            SortDirection="{Binding Data.DirectoryNameSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}">
-                        </DataGridTextColumn>
+                            SortDirection="{Binding Data.DirectoryNameSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}" />
 
                         <DataGridTextColumn
                             Width="200"
+                            ElementStyle="{StaticResource TextBlockEllipsis}"
                             Header="{x:Static p:Resources.ColumnChangedHeader}"
                             Binding="{Binding LastWriteTime, StringFormat=g, Mode=OneWay}"
-                            SortDirection="{Binding Data.LastWriteTimeSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}"></DataGridTextColumn>
+                            SortDirection="{Binding Data.LastWriteTimeSortDirection, Source={StaticResource ProjectProxy}, Mode=TwoWay}" />
                     </DataGrid.Columns>
 
                 </DataGrid>
@@ -102,19 +109,19 @@
                 <StackPanel Margin="0,0,0,12">
                     <TextBlock
                         Margin="0,0,0,6"
-                        Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                        Style="{StaticResource MaterialDesignCaptionTextBlock}">
                         <Run Text="{Binding DisplayName, Mode=OneWay}"></Run><Run Text=":"></Run>
                     </TextBlock>
 
                     <CheckBox
                         Margin="0,0,0,6"
                         IsChecked="{Binding SyncWord}"
-                        Style="{StaticResource MaterialDesignCheckBox}">Word (*.doc, *.docx)</CheckBox>
+                        Style="{StaticResource MaterialDesignCheckBox}">MS Word (*.doc, *.docx)</CheckBox>
 
                     <CheckBox
                         Margin="0,0,0,6"
                         IsChecked="{Binding SyncExcel}"
-                        Style="{StaticResource MaterialDesignCheckBox}">Excel (*.xls, *.xlsx)</CheckBox>
+                        Style="{StaticResource MaterialDesignCheckBox}">MS Excel (*.xls, *.xlsx)</CheckBox>
 
                     <CheckBox
                         IsChecked="{Binding SyncPdf}"
@@ -320,15 +327,13 @@
                     <StackPanel>
                         <TextBlock
                             Margin="0,0,0,12"
-                            Style="{StaticResource MaterialDesignHeadline1TextBlock}"
-                            Text="Наименование проекта"></TextBlock>
+                            Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                            Text="{x:Static p:Resources.ProjectSettingsNameTitle}"></TextBlock>
 
-                        <TextBox Margin="0,0,0,12" Text="{Binding DisplayName}"></TextBox>
-
-                        <TextBlock
+                        <TextBox
                             Margin="0,0,0,12"
-                            Style="{StaticResource MaterialDesignHeadline1TextBlock}"
-                            Text="{x:Static p:Resources.ProjectSettingsSyncFilesTitle}"></TextBlock>
+                            Style="{StaticResource MaterialDesignTextBox}"
+                            Text="{Binding DisplayName}"></TextBox>
 
                         <ItemsControl Focusable="False" ItemsSource="{Binding Directories}" ItemTemplate="{StaticResource DirectorySettingsItemTemplate}"></ItemsControl>
                     </StackPanel>
@@ -336,6 +341,6 @@
 
             </MahApps:Flyout>
         </MahApps:FlyoutsControl>
-    </MahApps:MetroWindow.Flyouts>-->
+    </MahApps:MetroWindow.Flyouts>
 
 </MahApps:MetroWindow>

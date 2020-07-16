@@ -422,6 +422,15 @@ namespace AnotherOneConverter.WPF.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project name.
+        /// </summary>
+        public static string ProjectSettingsNameTitle {
+            get {
+                return ResourceManager.GetString("ProjectSettingsNameTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sync folders.
         /// </summary>
         public static string ProjectSettingsSyncFilesTitle {
