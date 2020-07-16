@@ -5,17 +5,15 @@ using System;
 
 namespace AnotherOneConverter.WPF.Core
 {
-    public class NinjectContractResolver : DefaultContractResolver
+    public class JsonContractResolver : DefaultContractResolver
     {
         private readonly IServiceLocator _serviceLocator;
-        private readonly IDocumentFactory _documentFactory;
 
-        public NinjectContractResolver() : this(ServiceLocator.Current) { }
+        public JsonContractResolver() : this(ServiceLocator.Current) { }
 
-        public NinjectContractResolver(IServiceLocator serviceLocator)
+        public JsonContractResolver(IServiceLocator serviceLocator)
         {
             _serviceLocator = serviceLocator;
-            _documentFactory = _serviceLocator.GetInstance<IDocumentFactory>();
         }
 
         protected override JsonObjectContract CreateObjectContract(Type objectType)

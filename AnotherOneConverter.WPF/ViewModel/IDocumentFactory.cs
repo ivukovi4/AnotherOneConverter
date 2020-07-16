@@ -1,5 +1,7 @@
-﻿namespace AnotherOneConverter.WPF.ViewModel {
-    public interface IDocumentFactory {
+﻿namespace AnotherOneConverter.WPF.ViewModel
+{
+    public interface IDocumentFactory
+    {
         DocumentViewModel Create(string filePath);
 
         bool IsSupported(string filePath);

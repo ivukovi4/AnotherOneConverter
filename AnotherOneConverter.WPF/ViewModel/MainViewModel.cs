@@ -2,7 +2,7 @@
 using AnotherOneConverter.WPF.Properties;
 using CommonServiceLocator;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
@@ -45,7 +45,7 @@ namespace AnotherOneConverter.WPF.ViewModel
             _dialogCoordinator = dialogCoordinator;
             _jsonSettings = new JsonSerializerSettings();
             _jsonSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
-            _jsonSettings.ContractResolver = new NinjectContractResolver();
+            _jsonSettings.ContractResolver = new JsonContractResolver();
             _jsonSettings.Converters.Add(new DocumentJsonConverter());
 
             PropertyChanged += OnMainPropertyChanged;

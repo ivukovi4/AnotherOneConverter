@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace AnotherOneConverter.WPF.ViewModel {
-    public class ExcelDocumentViewModel : DocumentViewModel {
+namespace AnotherOneConverter.WPF.ViewModel
+{
+    public class ExcelDocumentViewModel : DocumentViewModel
+    {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(ExcelDocumentViewModel));
 
-        public override IEnumerable<string> SupportedExtensions {
-            get {
+        public override IEnumerable<string> SupportedExtensions
+        {
+            get
+            {
                 yield return ".xls";
                 yield return ".xlsx";
             }
         }
 
-        public override string ConvertToPdf(string targetDirectory) {
+        public override string ConvertToPdf(string targetDirectory)
+        {
             Log.Debug("Open Application");
 
             // Create a new Microsoft Word application object
@@ -26,7 +31,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
             // C# doesn't have optional arguments so we'll need a dummy value
             object oMissing = System.Reflection.Missing.Value;
 
-            try {
+            try
+            {
                 // Cast as Object for word Open method
                 var fileName = FileInfo.FullName;
 
@@ -36,29 +42,35 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     oMissing, oMissing, oMissing, oMissing, oMissing, oMissing,
                     oMissing, oMissing, oMissing, oMissing, oMissing);
 
-                foreach (Microsoft.Office.Interop.Excel.Worksheet sheet in workbook.Sheets) {
+                foreach (Microsoft.Office.Interop.Excel.Worksheet sheet in workbook.Sheets)
+                {
                     object missing = System.Reflection.Missing.Value;
                     var pictures = (Microsoft.Office.Interop.Excel.Pictures)sheet.Pictures(missing);
-                    foreach (Microsoft.Office.Interop.Excel.Picture picture in pictures) {
+                    foreach (Microsoft.Office.Interop.Excel.Picture picture in pictures)
+                    {
                         Log.Debug($"name: {picture.Name}");
                         Log.Debug($"formula: {picture.Formula}");
 
-                        if (picture != null && picture.Name.ToLower().StartsWith("signature")) {
+                        if (picture != null && picture.Name.ToLower().StartsWith("signature"))
+                        {
                             picture.Delete();
                         }
                     }
                 }
 
-                try {
+                try
+                {
                     workbook.Activate();
 
                     Log.Debug("Open Workbook Success");
 
                     object outputFileName;
-                    if (string.IsNullOrEmpty(targetDirectory)) {
+                    if (string.IsNullOrEmpty(targetDirectory))
+                    {
                         outputFileName = Path.ChangeExtension(fileName, ".pdf");
                     }
-                    else {
+                    else
+                    {
                         outputFileName = Path.ChangeExtension(Path.Combine(targetDirectory, Path.GetFileName(fileName)), ".pdf");
                     }
 
@@ -71,7 +83,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
                     return (string)outputFileName;
                 }
-                finally {
+                finally
+                {
                     Log.Debug("Close Workbook");
 
                     object saveChanges = Microsoft.Office.Interop.Excel.XlSaveAction.xlDoNotSaveChanges;
@@ -81,12 +94,14 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     Log.Debug("Close Workbook Success");
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Log.Debug(ex);
 
                 throw ex;
             }
-            finally {
+            finally
+            {
                 Log.Debug("Close Application");
 
                 // word has to be cast to type _Application so that it will find

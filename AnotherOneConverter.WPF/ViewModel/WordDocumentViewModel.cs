@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace AnotherOneConverter.WPF.ViewModel {
-    public class WordDocumentViewModel : DocumentViewModel {
+namespace AnotherOneConverter.WPF.ViewModel
+{
+    public class WordDocumentViewModel : DocumentViewModel
+    {
         private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(WordDocumentViewModel));
 
-        public override IEnumerable<string> SupportedExtensions {
-            get {
+        public override IEnumerable<string> SupportedExtensions
+        {
+            get
+            {
                 yield return ".doc";
                 yield return ".docx";
             }
         }
 
-        public override string ConvertToPdf(string targetDirectory) {
+        public override string ConvertToPdf(string targetDirectory)
+        {
             Log.Debug("Open Application");
 
             // Create a new Microsoft Word application object
@@ -25,7 +30,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
             // C# doesn't have optional arguments so we'll need a dummy value
             object oMissing = System.Reflection.Missing.Value;
 
-            try {
+            try
+            {
                 // Cast as Object for word Open method
                 object fileName = FileInfo.FullName;
 
@@ -37,16 +43,19 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing,
                     ref oMissing, ref oMissing, ref oMissing, ref oMissing);
 
-                try {
+                try
+                {
                     doc.Activate();
 
                     Log.Debug("Open Document Success");
 
                     object outputFileName;
-                    if (string.IsNullOrEmpty(targetDirectory)) {
+                    if (string.IsNullOrEmpty(targetDirectory))
+                    {
                         outputFileName = Path.ChangeExtension((string)fileName, ".pdf");
                     }
-                    else {
+                    else
+                    {
                         outputFileName = Path.ChangeExtension(Path.Combine(targetDirectory, Path.GetFileName((string)fileName)), ".pdf");
                     }
 
@@ -65,7 +74,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
 
                     return (string)outputFileName;
                 }
-                finally {
+                finally
+                {
                     Log.Debug("Close Document");
 
                     // Close the Word document, but leave the Word application open.
@@ -78,7 +88,8 @@ namespace AnotherOneConverter.WPF.ViewModel {
                     Log.Debug("Close Document Success");
                 }
             }
-            finally {
+            finally
+            {
                 Log.Debug("Close Application");
 
                 // word has to be cast to type _Application so that it will find

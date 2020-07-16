@@ -149,7 +149,7 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Core\DocumentJsonConverter.cs" />
     <Compile Include="Core\INotificationService.cs" />
-    <Compile Include="Core\NinjectContractResolver.cs" />
+    <Compile Include="Core\JsonContractResolver.cs" />
     <Compile Include="Core\SameAsComparer.cs" />
     <Compile Include="Core\WpfNotificationService.cs" />
     <Compile Include="Properties\Resources.ru-RU.Designer.cs">

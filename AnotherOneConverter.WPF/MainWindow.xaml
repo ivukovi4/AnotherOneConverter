@@ -14,6 +14,12 @@
     xmlns:MahAppsDialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:Taskbar="http://www.hardcodet.net/taskbar" 
     mc:Ignorable="d"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    Background="{DynamicResource MaterialDesignPaper}"
+    TextElement.FontWeight="Medium"
+    TextElement.FontSize="14"
+    FontFamily="{materialDesign:MaterialDesignFont}"
     Title="{x:Static p:Resources.ApplicationTitle}"
     MinHeight="480"
     MinWidth="640"
@@ -21,7 +27,6 @@
     Width="800"
     Icon="logo.ico"
     BorderThickness="1"
-    Background="#fafafa"
     WindowTransitionsEnabled="False"
     WindowStartupLocation="CenterScreen"
     Activated="OnActivated"
@@ -235,7 +240,7 @@
             <Material:PopupBox
                 ToolTip="{x:Static p:Resources.PopupBoxExportTooltip}"
                 Margin="0,0,12,0"
-                PopupMode="MouseOver"
+                PopupMode="MouseOverEager"
                 IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
                 ToggleCheckedContentCommand="{Binding ActiveProject.Export}"
                 Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}">
@@ -270,7 +275,7 @@
 
             <Material:PopupBox
                 ToolTip="{x:Static p:Resources.PopupBoxOpenTooltip}"
-                PopupMode="MouseOver"
+                PopupMode="MouseOverEager"
                 IsEnabled="{Binding ActiveProject.IsLoading, Converter={StaticResource NotConverter}}"
                 ToggleCheckedContentCommand="{Binding ActiveProject.OpenDocuments}"
                 ToggleCheckedContentCommandParameter=""
