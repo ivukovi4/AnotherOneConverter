@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnotherOneConverter.WinUI",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnotherOneConverter.Core", "AnotherOneConverter.Core\AnotherOneConverter.Core.csproj", "{9FC9AA9E-B74B-4656-9F60-3B0FE05AE9B7}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AnotherOneConverter.Installer", "AnotherOneConverter.Installer\AnotherOneConverter.Installer.vdproj", "{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,12 @@ Global
 		{9FC9AA9E-B74B-4656-9F60-3B0FE05AE9B7}.Release|x64.Build.0 = Release|Any CPU
 		{9FC9AA9E-B74B-4656-9F60-3B0FE05AE9B7}.Release|x86.ActiveCfg = Release|Any CPU
 		{9FC9AA9E-B74B-4656-9F60-3B0FE05AE9B7}.Release|x86.Build.0 = Release|Any CPU
+		{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}.Debug|Any CPU.ActiveCfg = Debug
+		{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}.Debug|x64.ActiveCfg = Debug
+		{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}.Debug|x86.ActiveCfg = Debug
+		{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}.Release|Any CPU.ActiveCfg = Release
+		{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}.Release|x64.ActiveCfg = Release
+		{2CDF2DB3-25B9-4C8B-930B-E64C8A814236}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
